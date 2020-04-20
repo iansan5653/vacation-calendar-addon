@@ -1,14 +1,24 @@
 {
   "compilerOptions": {
-    "target": "ES2020",
+    "target": "ESNext",
     "module": "commonjs",
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "esModuleInterop": true,
-    "outDir": "build"
+    "outDir": "build",
+    "lib": [
+      "ESNext"
+    ],
+    "types": [
+      "google-apps-script"
+    ]
   },
-  "include": ["src"]
+  "include": [
+    "src"
+  ],
+  "files": [
+    "src/index.ts"
+  ]
 }
