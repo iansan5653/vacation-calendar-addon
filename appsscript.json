@@ -1,4 +1,17 @@
 {
   "exceptionLogging": "STACKDRIVER",
-  "runtimeVersion": "V8"
+  "runtimeVersion": "V8",
+  "timeZone": "America/New_York",
+  "dependencies": {},
+  "addOns": {
+    "common": {
+      "name": "Team Calendar",
+      "logoUrl": "https://quokka-340401.web.app/quokka%20logo.png"
+    },
+    "calendar": {
+      "homepageTrigger": {
+        "runFunction": "onGetHomepage"
+      }
+    }
+  }
 }
