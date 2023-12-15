@@ -1,3 +1,2 @@
-import { getHomepage } from "./views/home";
-
-global.onGetHomepage = getHomepage;
+export {onClickCreateEvent} from "./global-functions/onClickCreateEvent";
+export {onGetHomepage} from "./global-functions/onGetHomepage";
