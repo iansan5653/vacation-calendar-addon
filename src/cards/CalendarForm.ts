@@ -2,7 +2,7 @@ import { TeamCalendar, TeamCalendarKey } from "../controllers/TeamCalendarContro
 import {
   SubmitUpdateCalendarFormAction,
   calendarFormFields,
-} from "../global-functions/onSubmitCalendarForm";
+} from "../endpoints/onSubmitCalendarForm";
 
 function CalendarNameInput(value?: string) {
   return CardService.newTextInput()

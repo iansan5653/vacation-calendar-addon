@@ -1,6 +1,6 @@
 import { TeamCalendar, TeamCalendarKey } from "../controllers/TeamCalendarController";
 import { TeamCalendarsController } from "../controllers/TeamCalendarsController";
-import { StartUpdateCalendarAction } from "../global-functions/onStartUpdateCalendar";
+import { StartUpdateCalendarAction } from "../endpoints/onStartUpdateCalendar";
 
 function CreateButton() {
   return CardService.newTextButton()

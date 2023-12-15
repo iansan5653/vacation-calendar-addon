@@ -1,3 +1,3 @@
-export { onStartUpdateCalendar } from "./global-functions/onStartUpdateCalendar";
-export { onGetHomepage } from "./global-functions/onGetHomepage";
-export { onSubmitCalendarForm } from "./global-functions/onSubmitCalendarForm";
+export { onStartUpdateCalendar } from "./endpoints/onStartUpdateCalendar";
+export { onGetHomepage } from "./endpoints/onGetHomepage";
+export { onSubmitCalendarForm } from "./endpoints/onSubmitCalendarForm";
