@@ -1,5 +1,8 @@
 import { TeamCalendar, TeamCalendarKey } from "../controllers/TeamCalendarController";
-import { SubmitUpdateCalendarFormAction } from "../global-functions/onSubmitCalendarForm";
+import {
+  SubmitUpdateCalendarFormAction,
+  calendarFormFields,
+} from "../global-functions/onSubmitCalendarForm";
 
 function CalendarNameInput(value?: string) {
   return CardService.newTextInput()
@@ -22,11 +25,6 @@ function SubmitButton(key?: TeamCalendarKey) {
     .setText("Submit")
     .setOnClickAction(SubmitUpdateCalendarFormAction(key));
 }
-
-export const calendarFormFields = {
-  name: "name",
-  teamMembers: "teamMembers",
-};
 
 export function CalendarFormCard(calendar?: { key: TeamCalendarKey; value: TeamCalendar }) {
   const title = calendar?.value ? `Edit "${calendar.value.name}"` : "New calendar";

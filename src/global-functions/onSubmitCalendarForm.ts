@@ -1,4 +1,3 @@
-import { calendarFormFields } from "../cards/CalendarForm";
 import { TeamCalendarController, TeamCalendarKey } from "../controllers/TeamCalendarController";
 import { GlobalFunction } from "./GlobalFunction";
 
@@ -11,6 +10,11 @@ export const onSubmitCalendarForm: GlobalFunction = ({ commonEventObject }) => {
     ) ?? [];
 
   TeamCalendarController.create({ name, teamMembers });
+};
+
+export const calendarFormFields = {
+  name: "name",
+  teamMembers: "teamMembers",
 };
 
 export function SubmitUpdateCalendarFormAction(calendarKey?: TeamCalendarKey) {
