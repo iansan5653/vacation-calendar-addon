@@ -5,6 +5,7 @@
   "scripts": {
     "build": "tsc && webpack",
     "push": "npm run build && clasp push -f",
+    "deploy": "npm run push && clasp deploy",
     "lint": "eslint",
     "format": "prettier",
     "login": "clasp login"
