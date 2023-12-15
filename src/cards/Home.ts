@@ -30,7 +30,7 @@ function calendarItems() {
 }
 
 export function HomeCard() {
-  const header = CardService.newCardHeader().setTitle("Your team calendars");
+  const header = CardService.newCardHeader().setTitle("Your calendars");
 
   let body = CardService.newCardSection();
   for (const item of calendarItems()) {

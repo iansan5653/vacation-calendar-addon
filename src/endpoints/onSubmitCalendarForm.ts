@@ -1,7 +1,7 @@
 import { TeamCalendarController, TeamCalendarKey } from "../controllers/TeamCalendarController";
-import { GlobalFunction } from "./GlobalFunction";
+import { Endpoint } from "./Endpoint";
 
-export const onSubmitCalendarForm: GlobalFunction = ({ commonEventObject }) => {
+export const onSubmitCalendarForm: Endpoint = ({ commonEventObject }) => {
   const name = commonEventObject.formInputs[calendarFormFields.name]?.stringInputs?.value[0] ?? "";
 
   const teamMembers =

@@ -1,8 +1,8 @@
 import { CalendarFormCard } from "../cards/CalendarForm";
 import { TeamCalendarController, TeamCalendarKey } from "../controllers/TeamCalendarController";
-import { GlobalFunction } from "./GlobalFunction";
+import { Endpoint } from "./Endpoint";
 
-export const onStartUpdateCalendar: GlobalFunction = ({ commonEventObject }) => {
+export const onStartUpdateCalendar: Endpoint = ({ commonEventObject }) => {
   const key = commonEventObject.parameters?.calendarKey;
 
   const calendar = key && TeamCalendarKey.is(key) ? TeamCalendarController.read(key) : undefined;

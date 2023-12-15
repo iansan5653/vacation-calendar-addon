@@ -5,8 +5,8 @@ type Event = Omit<GoogleAppsScript.Addons.EventObject, "commonEventObject"> & {
   };
 };
 
-interface GlobalFunctionResponse {
+interface Response {
   printJson(): string;
 }
 
-export type GlobalFunction = (event: Event) => GlobalFunctionResponse | void;
+export type Endpoint = (event: Event) => Response | void;

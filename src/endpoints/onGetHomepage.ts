@@ -1,4 +1,4 @@
 import { HomeCard } from "../cards/Home";
-import { GlobalFunction } from "./GlobalFunction";
+import { Endpoint } from "./Endpoint";
 
-export const onGetHomepage: GlobalFunction = () => HomeCard();
+export const onGetHomepage: Endpoint = () => HomeCard();
