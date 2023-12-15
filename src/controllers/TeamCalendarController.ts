@@ -4,7 +4,7 @@ export interface NewTeamCalendar {
 }
 
 export interface TeamCalendar extends NewTeamCalendar {
-  calendarId: string;
+  googleCalendarId: string;
 }
 
 const KEY_PREFIX = "TEAM_CALENDAR_";
@@ -19,7 +19,7 @@ export const TeamCalendarController = new (class {
   create({ name, teamMembers }: NewTeamCalendar) {
     const googleCalendar = CalendarApp.createCalendar(name);
 
-    const calendar: TeamCalendar = { name, teamMembers, calendarId: googleCalendar.getId() };
+    const calendar: TeamCalendar = { name, teamMembers, googleCalendarId: googleCalendar.getId() };
 
     PropertiesService.getUserProperties().setProperty(
       TeamCalendarKey.forGoogleCalendarId(googleCalendar.getId()),
