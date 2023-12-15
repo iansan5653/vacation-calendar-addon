@@ -9,7 +9,13 @@ export const onSubmitCalendarForm: Endpoint = ({ commonEventObject }) => {
       "\n",
     ) ?? [];
 
+  // FIXME: Update calendar instead of creating a new one
   TeamCalendarController.create({ name, teamMembers });
+
+  return CardService.newActionResponseBuilder()
+    .setNotification(CardService.newNotification().setText("Calendar created"))
+    .setNavigation(CardService.newNavigation().popToRoot())
+    .build();
 };
 
 export const calendarFormFields = {
