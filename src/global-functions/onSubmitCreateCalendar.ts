@@ -1,5 +1,5 @@
 import { createCalendarFormFields } from "../cards/CreateCalendarForm";
-import { TeamCalendarController } from "../controllers/TeamCalendar";
+import { TeamCalendarController } from "../controllers/TeamCalendarController";
 import { GlobalFunction } from "./GlobalFunction";
 
 export const onSubmitCreateCalendar: GlobalFunction = ({ commonEventObject }) => {
