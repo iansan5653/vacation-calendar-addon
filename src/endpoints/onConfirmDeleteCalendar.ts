@@ -1,10 +1,11 @@
-import { TeamCalendarController, TeamCalendarKey } from "../controllers/TeamCalendarController";
+import { TeamCalendarController } from "../controllers/TeamCalendarController";
+import { TeamCalendarKey } from "../models/TeamCalendarKey";
 import { Endpoint } from "./Endpoint";
 import { GoHomeNavigation } from "./onGoHome";
 
 export const onConfirmDeleteCalendar: Endpoint = ({ commonEventObject }) => {
-  const key = commonEventObject.parameters?.calendarKey;
-  if (!key || !TeamCalendarKey.is(key)) return;
+  const key = TeamCalendarKey.fromParameters(commonEventObject.parameters);
+  if (!key) throw new Error("Cannot delete calendar without key");
 
   TeamCalendarController.delete(key);
 
@@ -17,5 +18,5 @@ export const onConfirmDeleteCalendar: Endpoint = ({ commonEventObject }) => {
 export function ConfirmDeleteCalendarAction(calendarKey: TeamCalendarKey) {
   return CardService.newAction()
     .setFunctionName(onConfirmDeleteCalendar.name)
-    .setParameters({ calendarKey });
+    .setParameters(TeamCalendarKey.toParameters(calendarKey));
 }

@@ -1,9 +1,10 @@
-import { TeamCalendarController, TeamCalendarKey } from "../controllers/TeamCalendarController";
+import { TeamCalendarController } from "../controllers/TeamCalendarController";
+import { TeamCalendarKey } from "../models/TeamCalendarKey";
 import { Endpoint } from "./Endpoint";
 import { GoHomeNavigation } from "./onGoHome";
 
 export const onSubmitCalendarForm: Endpoint = ({ commonEventObject }) => {
-  const key = commonEventObject.parameters?.calendarKey;
+  const key = TeamCalendarKey.fromParameters(commonEventObject.parameters);
 
   const name = commonEventObject.formInputs[calendarFormFields.name]?.stringInputs?.value[0] ?? "";
 
@@ -12,7 +13,7 @@ export const onSubmitCalendarForm: Endpoint = ({ commonEventObject }) => {
       "\n",
     ) ?? [];
 
-  if (key && TeamCalendarKey.is(key)) {
+  if (key) {
     TeamCalendarController.update(key, { name, teamMembers });
   } else {
     TeamCalendarController.create({ name, teamMembers });
@@ -32,5 +33,5 @@ export const calendarFormFields = {
 export function SubmitUpdateCalendarFormAction(calendarKey?: TeamCalendarKey) {
   return CardService.newAction()
     .setFunctionName(onSubmitCalendarForm.name)
-    .setParameters(calendarKey ? { calendarKey } : {});
+    .setParameters(TeamCalendarKey.toParameters(calendarKey));
 }
