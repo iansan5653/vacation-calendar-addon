@@ -1,5 +1,5 @@
 import { HomeCard } from "../cards/Home";
-import { Endpoint } from "./Endpoint";
+import { Endpoint } from "./utils/Endpoint";
 
 export const onGoHome: Endpoint = () => {
   return CardService.newActionResponseBuilder().setNavigation(GoHomeNavigation()).build();

@@ -1,6 +1,6 @@
 import { ConfirmDeleteCalendarAction } from "../endpoints/onConfirmDeleteCalendar";
 import { GoBackAction } from "../endpoints/onGoBack";
-import {TeamCalendarKey} from "../models/TeamCalendarKey";
+import { TeamCalendarKey } from "../models/TeamCalendarKey";
 
 function ConfirmButton(key: TeamCalendarKey) {
   const button = CardService.newTextButton()

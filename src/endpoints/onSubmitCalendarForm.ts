@@ -1,10 +1,11 @@
 import { TeamCalendarController } from "../controllers/TeamCalendarController";
 import { TeamCalendarKey } from "../models/TeamCalendarKey";
-import { Endpoint } from "./Endpoint";
+import { Endpoint } from "./utils/Endpoint";
 import { GoHomeNavigation } from "./onGoHome";
+import { CalendarKeyParameters } from "./utils/Parameters";
 
 export const onSubmitCalendarForm: Endpoint = ({ commonEventObject }) => {
-  const key = TeamCalendarKey.fromParameters(commonEventObject.parameters);
+  const key = new CalendarKeyParameters(commonEventObject.parameters).getCalendarKey();
 
   const name = commonEventObject.formInputs[calendarFormFields.name]?.stringInputs?.value[0] ?? "";
 
@@ -33,5 +34,5 @@ export const calendarFormFields = {
 export function SubmitUpdateCalendarFormAction(calendarKey?: TeamCalendarKey) {
   return CardService.newAction()
     .setFunctionName(onSubmitCalendarForm.name)
-    .setParameters(TeamCalendarKey.toParameters(calendarKey));
+    .setParameters(new CalendarKeyParameters().setCalendarKey(calendarKey).build());
 }

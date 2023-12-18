@@ -1,4 +1,4 @@
-import { Endpoint } from "./Endpoint";
+import { Endpoint } from "./utils/Endpoint";
 
 export const onGoBack: Endpoint = () => {
   return CardService.newActionResponseBuilder()

@@ -18,7 +18,5 @@
     "googleappsscript/googleappsscript": true,
     "es6": true
   },
-  "ignorePatterns": [
-    "*.js"
-  ]
+  "ignorePatterns": ["*.js"]
 }
