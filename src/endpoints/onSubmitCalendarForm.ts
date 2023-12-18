@@ -16,14 +16,17 @@ export const onSubmitCalendarForm: Endpoint = ({ commonEventObject }) => {
 
   if (key) {
     TeamCalendarController.update(key, { name, teamMembers });
+    return CardService.newActionResponseBuilder()
+      .setNotification(CardService.newNotification().setText("Calendar saved"))
+      .setNavigation(GoHomeNavigation())
+      .build();
   } else {
     TeamCalendarController.create({ name, teamMembers });
+    return CardService.newActionResponseBuilder()
+      .setNotification(CardService.newNotification().setText("Calendar created"))
+      .setNavigation(GoHomeNavigation())
+      .build();
   }
-
-  return CardService.newActionResponseBuilder()
-    .setNotification(CardService.newNotification().setText("Calendar created"))
-    .setNavigation(GoHomeNavigation())
-    .build();
 };
 
 export const calendarFormFields = {

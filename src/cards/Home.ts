@@ -25,13 +25,13 @@ function calendarItems() {
     ? calendars
     : [
         CardService.newTextParagraph().setText(
-          "You don't have any calendars yet. Get started by creating a new one.",
+          "You don't have any team calendars yet. Get started by creating a new one.",
         ),
       ];
 }
 
 export function HomeCard() {
-  const header = CardService.newCardHeader().setTitle("Your calendars");
+  const header = CardService.newCardHeader().setTitle("Your team calendars");
 
   let body = CardService.newCardSection();
   for (const item of calendarItems()) {
