@@ -2,7 +2,20 @@
   "exceptionLogging": "STACKDRIVER",
   "runtimeVersion": "V8",
   "timeZone": "America/New_York",
-  "dependencies": {},
+  "dependencies": {
+    "enabledAdvancedServices": [
+      {
+        "userSymbol": "Calendar",
+        "version": "v3",
+        "serviceId": "calendar"
+      }
+    ]
+  },
+  "oauthScopes": [
+    "https://www.googleapis.com/auth/calendar",
+    "https://www.googleapis.com/auth/calendar.addons.execute",
+    "https://www.googleapis.com/auth/script.scriptapp"
+  ],
   "addOns": {
     "common": {
       "name": "Team Calendar",

@@ -3,6 +3,7 @@ import { TeamCalendarKey } from "../models/TeamCalendarKey";
 import { Endpoint } from "./utils/Endpoint";
 import { GoHomeNavigation } from "./onGoHome";
 import { CalendarKeyParameters } from "./utils/Parameters";
+import { populateCalendar } from "../jobs/populateCalendar";
 
 export const onSubmitCalendarForm: Endpoint = ({ commonEventObject }) => {
   const key = new CalendarKeyParameters(commonEventObject.parameters).getCalendarKey();
@@ -16,12 +17,18 @@ export const onSubmitCalendarForm: Endpoint = ({ commonEventObject }) => {
 
   if (key) {
     TeamCalendarController.update(key, { name, teamMembers });
+
+    populateCalendar(key); // FIXME: Don't update on update
+
     return CardService.newActionResponseBuilder()
       .setNotification(CardService.newNotification().setText("Calendar saved"))
       .setNavigation(GoHomeNavigation())
       .build();
   } else {
-    TeamCalendarController.create({ name, teamMembers });
+    const { key } = TeamCalendarController.create({ name, teamMembers });
+
+    populateCalendar(key);
+
     return CardService.newActionResponseBuilder()
       .setNotification(CardService.newNotification().setText("Calendar created"))
       .setNavigation(GoHomeNavigation())

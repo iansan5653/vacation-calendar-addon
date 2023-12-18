@@ -5,14 +5,20 @@ export const TeamCalendarController = new (class {
   create({ name, teamMembers }: NewTeamCalendar) {
     const googleCalendar = CalendarApp.createCalendar(name);
 
-    const calendar: TeamCalendar = { name, teamMembers, googleCalendarId: googleCalendar.getId() };
+    const calendar: TeamCalendar = {
+      name,
+      teamMembers,
+      googleCalendarId: googleCalendar.getId(),
+      managedEventIds: [],
+    };
 
-    PropertiesService.getUserProperties().setProperty(
-      TeamCalendarKey.forGoogleCalendarId(googleCalendar.getId()),
-      JSON.stringify(calendar),
-    );
+    const key = TeamCalendarKey.forGoogleCalendarId(googleCalendar.getId());
+    PropertiesService.getUserProperties().setProperty(key, JSON.stringify(calendar));
 
-    return calendar;
+    return {
+      key,
+      calendar,
+    };
   }
 
   read(id: TeamCalendarKey) {
@@ -22,7 +28,7 @@ export const TeamCalendarController = new (class {
     return JSON.parse(json) as TeamCalendar;
   }
 
-  update(id: TeamCalendarKey, data: Partial<NewTeamCalendar>) {
+  update(id: TeamCalendarKey, data: Partial<Omit<TeamCalendar, "googleCalendarId">>) {
     const currentCalendar = this.read(id);
 
     if (!currentCalendar) throw new Error("Failed to update calendar: not found");

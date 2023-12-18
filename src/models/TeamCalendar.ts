@@ -5,4 +5,5 @@ export interface NewTeamCalendar {
 
 export interface TeamCalendar extends NewTeamCalendar {
   googleCalendarId: string;
+  managedEventIds: string[];
 }
