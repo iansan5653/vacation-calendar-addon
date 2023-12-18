@@ -1,5 +1,6 @@
 import { TeamCalendarController, TeamCalendarKey } from "../controllers/TeamCalendarController";
 import { Endpoint } from "./Endpoint";
+import { GoHomeNavigation } from "./onGoHome";
 
 export const onConfirmDeleteCalendar: Endpoint = ({ commonEventObject }) => {
   const key = commonEventObject.parameters?.calendarKey;
@@ -9,7 +10,7 @@ export const onConfirmDeleteCalendar: Endpoint = ({ commonEventObject }) => {
 
   return CardService.newActionResponseBuilder()
     .setNotification(CardService.newNotification().setText("Calendar deleted"))
-    .setNavigation(CardService.newNavigation().popToRoot())
+    .setNavigation(GoHomeNavigation())
     .build();
 };
 

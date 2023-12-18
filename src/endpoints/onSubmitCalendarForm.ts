@@ -1,7 +1,10 @@
 import { TeamCalendarController, TeamCalendarKey } from "../controllers/TeamCalendarController";
 import { Endpoint } from "./Endpoint";
+import { GoHomeNavigation } from "./onGoHome";
 
 export const onSubmitCalendarForm: Endpoint = ({ commonEventObject }) => {
+  const key = commonEventObject.parameters?.calendarKey;
+
   const name = commonEventObject.formInputs[calendarFormFields.name]?.stringInputs?.value[0] ?? "";
 
   const teamMembers =
@@ -9,12 +12,15 @@ export const onSubmitCalendarForm: Endpoint = ({ commonEventObject }) => {
       "\n",
     ) ?? [];
 
-  // FIXME: Update calendar instead of creating a new one
-  TeamCalendarController.create({ name, teamMembers });
+  if (key && TeamCalendarKey.is(key)) {
+    TeamCalendarController.update(key, { name, teamMembers });
+  } else {
+    TeamCalendarController.create({ name, teamMembers });
+  }
 
   return CardService.newActionResponseBuilder()
     .setNotification(CardService.newNotification().setText("Calendar created"))
-    .setNavigation(CardService.newNavigation().popToRoot())
+    .setNavigation(GoHomeNavigation())
     .build();
 };
 
