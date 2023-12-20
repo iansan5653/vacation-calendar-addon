@@ -36,6 +36,9 @@ export const TeamCalendarController = {
     const updatedCalendar = { ...currentCalendar, ...data };
 
     PropertiesService.getUserProperties().setProperty(id, JSON.stringify(updatedCalendar));
+
+    if ("name" in data)
+      CalendarApp.getCalendarById(currentCalendar.googleCalendarId).setName(updatedCalendar.name);
   },
 
   delete(id: TeamCalendarKey) {
