@@ -10,6 +10,10 @@ const isAllDayEvent = (event: GoogleAppsScript.Calendar.Schema.Event) => {
   if (isValid(parsed) && parsed.getHours() === 0 && parsed.getMinutes() === 0) return true;
 };
 
+const oooTitle = /^(OOO|Out of office)/i;
+const isTitledOutOfOffice = (event: GoogleAppsScript.Calendar.Schema.Event) =>
+  event.summary && oooTitle.test(event.summary);
+
 /**
  * Completely wipe and repopulate a calendar.
  */
@@ -44,14 +48,14 @@ export function populateCalendar(calendarKey: TeamCalendarKey) {
     // presence of date field indicates all day
     for (const event of events)
       if (isAllDayEvent(event)) {
-        const summary =
-          event.summary && event.summary !== "OOO" && event.summary !== "Out of office"
-            ? ` OOO: ${event.summary}`
-            : " OOO";
+        // If it has more details in the title, append them to the event name
+        const summary = isTitledOutOfOffice(event) ? " OOO" : ` OOO: ${event.summary}`;
+
         const start = parseISO(event.start?.date ?? event.start?.dateTime ?? "");
         let end = parseISO(event.end?.date ?? event.end?.dateTime ?? "");
         if (!isValid(start)) continue;
         if (!isValid(end)) end = start;
+
         const newEvent = googleCalendar.createAllDayEvent(
           `${teamMemberCalendar.getName()} ${summary}`,
           start,
