@@ -1,9 +1,7 @@
+import { populateWindow } from "../config";
 import { TeamCalendarController } from "../controllers/TeamCalendarController";
 import { TeamCalendarKey } from "../models/TeamCalendarKey";
-import { Duration, add, isValid, parseISO } from "date-fns";
-
-/** How far to populate the calendar into the future. */
-const windowDuration = { months: 6 } as const satisfies Duration;
+import { add, isValid, parseISO } from "date-fns";
 
 type CalendarApiEvent = GoogleAppsScript.Calendar.Schema.Event;
 
@@ -41,7 +39,7 @@ function getAllDayOutOfOfficeEvents(calendarId: string, now: Date) {
     Calendar.Events!.list(calendarId, {
       eventTypes: ["outOfOffice"],
       timeMin: now.toISOString(),
-      timeMax: add(now, windowDuration).toISOString(),
+      timeMax: add(now, populateWindow).toISOString(),
       singleEvents: true,
     }).items ?? [];
   return allEvents.filter(isAllDayEvent);
@@ -70,10 +68,12 @@ function createTeamCalendarEvent(
 /**
  * Completely wipe and repopulate a calendar.
  */
-export function populateCalendar(calendarKey: TeamCalendarKey) {
+export function populateCalendar(
+  calendarKey: TeamCalendarKey,
+  calendar = TeamCalendarController.read(calendarKey),
+) {
   const now = new Date();
 
-  const calendar = TeamCalendarController.read(calendarKey);
   if (!calendar) throw new Error("Failed to populate calendar: Team calendar not found");
 
   const googleCalendar = CalendarApp.getCalendarById(calendar.googleCalendarId);
