@@ -1,16 +1,20 @@
 import { populateWindow } from "../config";
 import { TeamCalendarController } from "../controllers/TeamCalendarController";
 import { TeamCalendarKey } from "../models/TeamCalendarKey";
-import { add, isValid, parseISO } from "date-fns";
+import { add, differenceInHours, isValid, parseISO } from "date-fns";
 
 type CalendarApiEvent = GoogleAppsScript.Calendar.Schema.Event;
 
 const isAllDayEvent = (event: CalendarApiEvent) => {
   if (!event.start) return;
   if (event.start.date) return true;
-  if (!event.start.dateTime) return false;
-  const parsed = parseISO(event.start.dateTime);
-  if (isValid(parsed) && parsed.getHours() === 0 && parsed.getMinutes() === 0) return true;
+
+  if (!event.start.dateTime || !event.end?.dateTime) return false;
+
+  // If the event is more than 6 hrs long consider it to be fair game
+  // FIXME: This will treat small overlays as full days. We should actually rount to the nearest midnight
+  if (differenceInHours(parseISO(event.end.dateTime), parseISO(event.start.dateTime)) > 6)
+    return true;
 };
 
 const oooTitle = /^(OOO|Out of office)$/i;
