@@ -7,10 +7,9 @@ type CalendarApiEvent = GoogleAppsScript.Calendar.Schema.Event;
 
 const oooTitle = /^(OOO|Out of office)$/i;
 
-const formatEventTitle = (teamMember: string, sourceEvent: CalendarApiEvent) => {
-  const sourceSummary = sourceEvent.summary || "OOO";
+const formatEventSummary = (teamMember: string, sourceEventSummary = "OOO") => {
   // only include the event name if it's not redundant with OOO
-  return `${teamMember} OOO${oooTitle.test(sourceSummary) ? "" : `: ${sourceSummary}`}`;
+  return `${teamMember} OOO${oooTitle.test(sourceEventSummary) ? "" : `: ${sourceEventSummary}`}`;
 };
 
 /** Get all the OOO events on the calendar in the configured window. */
@@ -22,7 +21,7 @@ function getOutOfOfficeEvents(calendarId: string, now: Date) {
       eventTypes: ["outOfOffice"],
       timeMin: now.toISOString(),
       timeMax: add(now, populateWindow).toISOString(),
-      singleEvents: true,
+      singleEvents: false,
     }).items ?? []
   );
 }
@@ -30,15 +29,16 @@ function getOutOfOfficeEvents(calendarId: string, now: Date) {
 /** Create a new event on the team calendar and return its ID. */
 function createTeamCalendarEvent(
   teamMember: string,
-  sourceEvent: CalendarApiEvent,
+  { summary, start, end, recurrence }: CalendarApiEvent,
   targetCalendarId: string,
 ) {
   // using the calendar API here avoids parsing the source event dates and introducing time zone logic
   return Calendar.Events!.insert(
     {
-      summary: formatEventTitle(teamMember, sourceEvent),
-      start: sourceEvent.start,
-      end: sourceEvent.end,
+      summary: formatEventSummary(teamMember, summary),
+      start,
+      end,
+      recurrence,
     },
     targetCalendarId,
   ).id;
