@@ -2,7 +2,7 @@ import { NewTeamCalendar, TeamCalendar } from "../models/TeamCalendar";
 import { TeamCalendarKey } from "../models/TeamCalendarKey";
 
 export const TeamCalendarController = {
-  create({ name, teamMembers }: NewTeamCalendar) {
+  create({ name, teamMembers, minEventDuration }: NewTeamCalendar) {
     const googleCalendar = CalendarApp.createCalendar(name);
 
     const calendar: TeamCalendar = {
@@ -10,6 +10,7 @@ export const TeamCalendarController = {
       teamMembers,
       googleCalendarId: googleCalendar.getId(),
       managedEventIds: [],
+      minEventDuration,
     };
 
     const key = TeamCalendarKey.forGoogleCalendarId(googleCalendar.getId());

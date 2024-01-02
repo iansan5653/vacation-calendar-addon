@@ -22,6 +22,14 @@ function TeamMembersInput(value?: string[]) {
     .setValue(value?.join("\n") ?? "");
 }
 
+function MinDurationInput(value?: string) {
+  return CardService.newTextInput()
+    .setFieldName(calendarFormFields.minEventDuration)
+    .setTitle("Minimum event duration")
+    .setHint("Minimum duration of events to copy, in hours")
+    .setValue(value ?? "4");
+}
+
 function SubmitButton(key?: TeamCalendarKey) {
   return CardService.newTextButton()
     .setText("Submit")
@@ -48,6 +56,7 @@ export function CalendarFormCard(calendar?: { key: TeamCalendarKey; calendar: Te
       CardService.newCardSection()
         .addWidget(CalendarNameInput(calendar?.calendar.name))
         .addWidget(TeamMembersInput(calendar?.calendar.teamMembers))
+        .addWidget(MinDurationInput(calendar?.calendar.minEventDuration?.toString(10)))
         .addWidget(buttons),
     )
     .build();

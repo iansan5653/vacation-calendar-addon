@@ -1,7 +1,7 @@
 import { populateWindow } from "../config";
 import { TeamCalendarController } from "../controllers/TeamCalendarController";
 import { TeamCalendarKey } from "../models/TeamCalendarKey";
-import { add } from "date-fns";
+import { add, differenceInMinutes, parseISO } from "date-fns";
 
 type CalendarApiEvent = GoogleAppsScript.Calendar.Schema.Event;
 
@@ -12,18 +12,39 @@ const formatEventSummary = (teamMember: string, sourceEventSummary = "OOO") => {
   return `${teamMember} OOO${oooTitle.test(sourceEventSummary) ? "" : `: ${sourceEventSummary}`}`;
 };
 
+const parseDateTime = (dateTime: GoogleAppsScript.Calendar.Schema.EventDateTime) => {
+  if (dateTime.date) return parseISO(dateTime.date);
+  if (dateTime.dateTime) return parseISO(dateTime.dateTime);
+};
+
+const durationInHours = ({ start, end }: CalendarApiEvent) => {
+  const startDate = start && parseDateTime(start);
+  const endDate = end && parseDateTime(end);
+  if (!startDate || !endDate) return -1;
+
+  // durationInHours would round to the nearest hour; we want a little more precision
+  return Math.abs(differenceInMinutes(endDate, startDate)) / 60;
+};
+
 /** Get all the OOO events on the calendar in the configured window. */
-function getOutOfOfficeEvents(calendarId: string, now: Date) {
+function getOutOfOfficeEvents(calendarId: string, now: Date, minDurationHours: number) {
   // here we must fall back to the Calendar API because CalendarApp does not
   // support querying for OOO events
-  return (
+  const all =
     Calendar.Events!.list(calendarId, {
       eventTypes: ["outOfOffice"],
       timeMin: now.toISOString(),
       timeMax: add(now, populateWindow).toISOString(),
       singleEvents: false,
-    }).items ?? []
+    }).items ?? [];
+
+  const filtered = all.filter((event) => durationInHours(event) >= minDurationHours);
+
+  Logger.log(
+    `${calendarId}: Using ${filtered.length} long enough events of ${all.length} total OOO events`,
   );
+
+  return filtered;
 }
 
 /** Create a new event on the team calendar and return its ID. */
@@ -49,6 +70,7 @@ export function populateCalendar(
   calendarKey: TeamCalendarKey,
   calendar = TeamCalendarController.read(calendarKey),
 ) {
+  Logger.log(`Populating calendar ${calendarKey}: ${JSON.stringify(calendar)})}`);
   const now = new Date();
 
   if (!calendar) throw new Error("Failed to populate calendar: Team calendar not found");
@@ -69,7 +91,7 @@ export function populateCalendar(
   // Repopulate the calendar
   const newManagedEventIds = [];
   for (const teamMember of calendar.teamMembers)
-    for (const sourceEvent of getOutOfOfficeEvents(teamMember, now)) {
+    for (const sourceEvent of getOutOfOfficeEvents(teamMember, now, calendar.minEventDuration)) {
       const id = createTeamCalendarEvent(teamMember, sourceEvent, googleCalendarId);
       if (id) newManagedEventIds.push(id);
     }

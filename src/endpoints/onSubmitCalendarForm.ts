@@ -4,7 +4,7 @@ import { Endpoint } from "./utils/Endpoint";
 import { GoHomeNavigation } from "./onGoHome";
 import { CalendarKeyParameters } from "./utils/Parameters";
 import { QueueController } from "../controllers/QueueController";
-import {onPopulateCalendars} from "./onPopulateCalendars";
+import { onPopulateCalendars } from "./onPopulateCalendars";
 
 export const onSubmitCalendarForm: Endpoint = ({ commonEventObject }) => {
   let key = new CalendarKeyParameters(commonEventObject.parameters).getCalendarKey();
@@ -17,10 +17,19 @@ export const onSubmitCalendarForm: Endpoint = ({ commonEventObject }) => {
       "\n",
     ) ?? [];
 
+  const minEventDurationStr =
+    commonEventObject.formInputs[calendarFormFields.minEventDuration]?.stringInputs?.value[0] ??
+    "4";
+  const minEventDuration = parseInt(minEventDurationStr, 10);
+  if (Number.isNaN(minEventDuration))
+    throw new Error(
+      `Invalid minimum event duration: ${minEventDurationStr}. Must be a number greater than 0.`,
+    );
+
   if (key) {
-    TeamCalendarController.update(key, { name, teamMembers });
+    TeamCalendarController.update(key, { name, teamMembers, minEventDuration });
   } else {
-    key = TeamCalendarController.create({ name, teamMembers }).key;
+    key = TeamCalendarController.create({ name, teamMembers, minEventDuration }).key;
   }
 
   QueueController.queueOnce(onPopulateCalendars.name, { seconds: 1 });
@@ -40,6 +49,7 @@ export const onSubmitCalendarForm: Endpoint = ({ commonEventObject }) => {
 export const calendarFormFields = {
   name: "name",
   teamMembers: "teamMembers",
+  minEventDuration: "minEventDuration",
 };
 
 export function SubmitUpdateCalendarFormAction(calendarKey?: TeamCalendarKey) {
