@@ -1,21 +1,9 @@
 import { populateWindow } from "../config";
 import { TeamCalendarController } from "../controllers/TeamCalendarController";
 import { TeamCalendarKey } from "../models/TeamCalendarKey";
-import { add, differenceInHours, isValid, parseISO } from "date-fns";
+import { add } from "date-fns";
 
 type CalendarApiEvent = GoogleAppsScript.Calendar.Schema.Event;
-
-const isAllDayEvent = (event: CalendarApiEvent) => {
-  if (!event.start) return;
-  if (event.start.date) return true;
-
-  if (!event.start.dateTime || !event.end?.dateTime) return false;
-
-  // If the event is more than 6 hrs long consider it to be fair game
-  // FIXME: This will treat small overlays as full days. We should actually rount to the nearest midnight
-  if (differenceInHours(parseISO(event.end.dateTime), parseISO(event.start.dateTime)) > 6)
-    return true;
-};
 
 const oooTitle = /^(OOO|Out of office)$/i;
 
@@ -25,53 +13,38 @@ const formatEventTitle = (teamMember: string, sourceEvent: CalendarApiEvent) => 
   return `${teamMember} OOO${oooTitle.test(sourceSummary) ? "" : `: ${sourceSummary}`}`;
 };
 
-const getStart = (event: CalendarApiEvent) => {
-  const parsed = parseISO(event.start?.date ?? event.start?.dateTime ?? "");
-  return isValid(parsed) ? parsed : null;
-};
-
-const getEnd = (event: CalendarApiEvent) => {
-  const parsed = parseISO(event.end?.date ?? event.end?.dateTime ?? "");
-  return isValid(parsed) ? parsed : null;
-};
-
-/** Get all the all-day OOO events on the calendar in the configured window. */
-function getAllDayOutOfOfficeEvents(calendarId: string, now: Date) {
+/** Get all the OOO events on the calendar in the configured window. */
+function getOutOfOfficeEvents(calendarId: string, now: Date) {
   // here we must fall back to the Calendar API because CalendarApp does not
   // support querying for OOO events
-  const allEvents =
+  return (
     Calendar.Events!.list(calendarId, {
       eventTypes: ["outOfOffice"],
       timeMin: now.toISOString(),
       timeMax: add(now, populateWindow).toISOString(),
       singleEvents: true,
-    }).items ?? [];
-  return allEvents.filter(isAllDayEvent);
+    }).items ?? []
+  );
 }
 
 /** Create a new event on the team calendar and return its ID. */
 function createTeamCalendarEvent(
   teamMember: string,
   sourceEvent: CalendarApiEvent,
-  targetCalendar: GoogleAppsScript.Calendar.Calendar,
+  targetCalendarId: string,
 ) {
-  const start = getStart(sourceEvent);
-  if (!start) return null;
-
-  const end = getEnd(sourceEvent) ?? start;
-
-  const newEvent = targetCalendar.createAllDayEvent(
-    formatEventTitle(teamMember, sourceEvent),
-    start,
-    end,
-  );
-
-  return newEvent.getId();
+  // using the calendar API here avoids parsing the source event dates and introducing time zone logic
+  return Calendar.Events!.insert(
+    {
+      summary: formatEventTitle(teamMember, sourceEvent),
+      start: sourceEvent.start,
+      end: sourceEvent.end,
+    },
+    targetCalendarId,
+  ).id;
 }
 
-/**
- * Completely wipe and repopulate a calendar.
- */
+/** Completely wipe and repopulate a calendar. */
 export function populateCalendar(
   calendarKey: TeamCalendarKey,
   calendar = TeamCalendarController.read(calendarKey),
@@ -81,6 +54,7 @@ export function populateCalendar(
   if (!calendar) throw new Error("Failed to populate calendar: Team calendar not found");
 
   const googleCalendar = CalendarApp.getCalendarById(calendar.googleCalendarId);
+  const googleCalendarId = googleCalendar?.getId();
   if (!googleCalendar) throw new Error("Failed to populate calendar: Google calendar not found");
 
   // Wipe the calendar
@@ -95,8 +69,8 @@ export function populateCalendar(
   // Repopulate the calendar
   const newManagedEventIds = [];
   for (const teamMember of calendar.teamMembers)
-    for (const sourceEvent of getAllDayOutOfOfficeEvents(teamMember, now)) {
-      const id = createTeamCalendarEvent(teamMember, sourceEvent, googleCalendar);
+    for (const sourceEvent of getOutOfOfficeEvents(teamMember, now)) {
+      const id = createTeamCalendarEvent(teamMember, sourceEvent, googleCalendarId);
       if (id) newManagedEventIds.push(id);
     }
 
