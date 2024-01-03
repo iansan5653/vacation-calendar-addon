@@ -10,9 +10,17 @@
     "noUncheckedIndexedAccess": true,
     "esModuleInterop": true,
     "outDir": "build",
-    "lib": ["ES2021"],
-    "types": ["google-apps-script"]
+    "lib": [
+      "ES2021"
+    ],
+    "types": [
+      "google-apps-script"
+    ]
   },
-  "include": ["src"],
-  "files": ["src/index.ts"]
+  "include": [
+    "src"
+  ],
+  "files": [
+    "src/index.ts"
+  ]
 }

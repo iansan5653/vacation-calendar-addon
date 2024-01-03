@@ -66,6 +66,28 @@ function createTeamCalendarEvent(
   ).id;
 }
 
+function getTeamMemberName(email: string) {
+  return (
+    // not-yet-typed, see https://developers.google.com/people/api/rest/v1/people/searchDirectoryPeople
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (People.People! as any).searchDirectoryPeople({
+      query: email,
+      readMask: "names",
+      sources: ["DIRECTORY_SOURCE_TYPE_DOMAIN_PROFILE", "DIRECTORY_SOURCE_TYPE_DOMAIN_CONTACT"],
+      pageSize: 1,
+    }).people?.[0]?.names?.[0]?.displayName ?? email
+  );
+}
+
+function deleteEvent(calendarId: string, eventId: string) {
+  try {
+    Calendar.Events!.remove(calendarId, eventId, { sendUpdates: "none" });
+  } catch (e) {
+    // Probably no big deal - user probably deleted it already
+    Logger.log(`Non-fatal error: Failed to delete event ${eventId}: ${e}`);
+  }
+}
+
 /** Completely wipe and repopulate a calendar. */
 export function populateCalendar(
   teamCalendarId: TeamCalendarId,
@@ -82,22 +104,27 @@ export function populateCalendar(
     return;
   }
 
+  Logger.log("Clearing existing events");
+
   // Wipe the calendar
-  for (const eventId of calendar.managedEventIds)
-    try {
-      googleCalendar.getEventById(eventId)?.deleteEvent();
-    } catch (e) {
-      // Probably no big deal - user probably deleted it already
-      Logger.log(`Non-fatal error: Failed to delete event ${eventId}: ${e}`);
-    }
+  for (const eventId of calendar.managedEventIds) deleteEvent(calendar.googleCalendarId, eventId);
+
+  Logger.log("Finished clearing events");
 
   // Repopulate the calendar
   const newManagedEventIds = [];
-  for (const teamMember of calendar.teamMembers)
-    for (const sourceEvent of getOutOfOfficeEvents(teamMember, now, calendar.minEventDuration)) {
-      const id = createTeamCalendarEvent(teamMember, sourceEvent, calendar.googleCalendarId);
+  for (const teamMemberEmail of calendar.teamMembers) {
+    const name = getTeamMemberName(teamMemberEmail);
+
+    for (const sourceEvent of getOutOfOfficeEvents(
+      teamMemberEmail,
+      now,
+      calendar.minEventDuration,
+    )) {
+      const id = createTeamCalendarEvent(name, sourceEvent, calendar.googleCalendarId);
       if (id) newManagedEventIds.push(id);
     }
+  }
 
   TeamCalendarController.update(teamCalendarId, { managedEventIds: newManagedEventIds });
 }
