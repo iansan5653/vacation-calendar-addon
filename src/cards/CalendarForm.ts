@@ -1,4 +1,4 @@
-import { DeleteCalendarAction } from "../endpoints/onDeleteCalendar";
+import { GoBackAction } from "../endpoints/onGoBack";
 import {
   SubmitUpdateCalendarFormAction,
   calendarFormFields,
@@ -36,18 +36,16 @@ function SubmitButton(key?: TeamCalendarKey) {
     .setOnClickAction(SubmitUpdateCalendarFormAction(key));
 }
 
-function DeleteButton(key: TeamCalendarKey) {
-  return CardService.newTextButton()
-    .setText("Delete")
-    .setBackgroundColor("#ff0000")
-    .setOnClickAction(DeleteCalendarAction(key));
+function CancelButton() {
+  return CardService.newTextButton().setText("Cancel").setOnClickAction(GoBackAction());
 }
 
 export function CalendarFormCard(calendar?: { key: TeamCalendarKey; calendar: TeamCalendar }) {
   const title = calendar?.calendar ? `Edit "${calendar.calendar.name}"` : "New calendar";
 
-  const buttons = CardService.newButtonSet().addButton(SubmitButton(calendar?.key));
-  if (calendar?.key) buttons.addButton(DeleteButton(calendar.key));
+  const buttons = CardService.newButtonSet()
+    .addButton(SubmitButton(calendar?.key))
+    .addButton(CancelButton());
 
   return CardService.newCardBuilder()
     .setName(CalendarFormCard.name)
