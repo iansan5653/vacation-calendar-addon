@@ -19,7 +19,13 @@
   "addOns": {
     "common": {
       "name": "Team Calendar",
-      "logoUrl": "https://quokka-340401.web.app/quokka%20logo.png"
+      "logoUrl": "https://quokka-340401.web.app/quokka%20logo.png",
+      "universalActions": [
+        {
+          "label": "Create a new calendar",
+          "runFunction": "onStartUpdateCalendar"
+        }
+      ]
     },
     "calendar": {
       "homepageTrigger": {

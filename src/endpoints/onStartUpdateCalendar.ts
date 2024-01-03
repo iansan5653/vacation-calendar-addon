@@ -4,6 +4,7 @@ import { TeamCalendarKey } from "../models/TeamCalendarKey";
 import { Endpoint } from "./utils/Endpoint";
 import { CalendarKeyParameters } from "./utils/Parameters";
 
+// Note: this is a global action, so if the function is renamed it must also be updated in the manifest
 export const onStartUpdateCalendar: Endpoint = ({ commonEventObject }) => {
   const key = new CalendarKeyParameters(commonEventObject.parameters).getCalendarKey();
 
