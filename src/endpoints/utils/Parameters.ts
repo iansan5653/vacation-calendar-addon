@@ -1,5 +1,11 @@
 import { TeamCalendarKey } from "../../models/TeamCalendarKey";
 
+export type BooleanString = "true" | "false";
+
+type BooleanKeys<T extends Record<string, string>> = {
+  [K in keyof T]: T[K] extends BooleanString ? K : never;
+}[keyof T];
+
 export class Parameters<T extends Record<string, string>> {
   #data: Partial<T>;
 
@@ -22,6 +28,19 @@ export class Parameters<T extends Record<string, string>> {
   get<K extends keyof T>(key: K): T[K] | undefined {
     return this.#data[key];
   }
+
+  setBoolean<K extends BooleanKeys<T>>(key: K, value: boolean | undefined): this {
+    return this.set(key, value?.toString() as T[K]);
+  }
+
+  getBoolean<K extends BooleanKeys<T>>(key: K): boolean | undefined {
+    const value = this.get(key);
+    return value === undefined ? undefined : value === "true";
+  }
+}
+
+export interface CalendarKeyParamsShape {
+  calendarKey: TeamCalendarKey;
 }
 
 export class CalendarKeyParameters<
