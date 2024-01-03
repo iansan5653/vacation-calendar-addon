@@ -5,6 +5,7 @@ import { GoHomeNavigation } from "./onGoHome";
 import { TeamCalendarIdParameters } from "./utils/Parameters";
 import { QueueController } from "../controllers/QueueController";
 import { onPopulateCalendars } from "./onPopulateCalendars";
+import { CalendarCard } from "../cards/Calendar";
 
 export const onSubmitCalendarForm: Endpoint = ({ commonEventObject }) => {
   let teamCalendarId = new TeamCalendarIdParameters(commonEventObject.parameters).getId();
@@ -26,10 +27,17 @@ export const onSubmitCalendarForm: Endpoint = ({ commonEventObject }) => {
       `Invalid minimum event duration: ${minEventDurationStr}. Must be a number greater than 0.`,
     );
 
+  let teamCalendar;
   if (teamCalendarId) {
-    TeamCalendarController.update(teamCalendarId, { name, teamMembers, minEventDuration });
+    teamCalendar = TeamCalendarController.update(teamCalendarId, {
+      name,
+      teamMembers,
+      minEventDuration,
+    });
   } else {
-    teamCalendarId = TeamCalendarController.create({ name, teamMembers, minEventDuration }).id;
+    const result = TeamCalendarController.create({ name, teamMembers, minEventDuration });
+    teamCalendar = result.calendar;
+    teamCalendarId = result.id;
   }
 
   QueueController.queueOnce(onPopulateCalendars.name, { seconds: 1 });
@@ -37,12 +45,10 @@ export const onSubmitCalendarForm: Endpoint = ({ commonEventObject }) => {
   return CardService.newActionResponseBuilder()
     .setNotification(
       CardService.newNotification().setText(
-        isUpdate
-          ? "Calendar updated."
-          : "Calendar created. Refresh the page to see it in your calendars.",
+        isUpdate ? "Calendar updated." : "Calendar created. Events will appear in a few minutes.",
       ),
     )
-    .setNavigation(GoHomeNavigation())
+    .setNavigation(GoHomeNavigation().pushCard(CalendarCard(teamCalendarId, teamCalendar)))
     .build();
 };
 

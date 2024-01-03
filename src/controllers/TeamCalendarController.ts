@@ -43,6 +43,8 @@ export const TeamCalendarController = {
       LinkedCalendarController.read(currentCalendar.googleCalendarId)?.setName(
         updatedCalendar.name,
       );
+
+    return updatedCalendar;
   },
 
   delete(id: TeamCalendarId) {
