@@ -6,12 +6,14 @@ import { TeamCalendarIdParameters } from "./utils/Parameters";
 import { QueueController } from "../controllers/QueueController";
 import { onPopulateCalendars } from "./onPopulateCalendars";
 import { CalendarCard } from "../cards/Calendar";
+import { NameFormat } from "../models/TeamCalendar";
 
 export const onSubmitCalendarForm: Endpoint = ({ commonEventObject }) => {
   let teamCalendarId = new TeamCalendarIdParameters(commonEventObject.parameters).getId();
   const isUpdate = !!teamCalendarId;
 
   const name = commonEventObject.formInputs[calendarFormFields.name]?.stringInputs?.value[0] ?? "";
+  if (!name) throw new Error("Calendar name is required.");
 
   const teamMembers =
     commonEventObject.formInputs[calendarFormFields.teamMembers]?.stringInputs?.value[0]?.split(
@@ -27,6 +29,10 @@ export const onSubmitCalendarForm: Endpoint = ({ commonEventObject }) => {
       `Invalid minimum event duration: ${minEventDurationStr}. Must be a number greater than 0.`,
     );
 
+  const nameFormatStr =
+    commonEventObject.formInputs[calendarFormFields.nameFormat]?.stringInputs?.value[0];
+  const nameFormat = nameFormatStr && NameFormat.is(nameFormatStr) ? nameFormatStr : "name";
+
   let teamCalendar;
   if (teamCalendarId) {
     teamCalendar = TeamCalendarController.update(teamCalendarId, {
@@ -35,7 +41,12 @@ export const onSubmitCalendarForm: Endpoint = ({ commonEventObject }) => {
       minEventDuration,
     });
   } else {
-    const result = TeamCalendarController.create({ name, teamMembers, minEventDuration });
+    const result = TeamCalendarController.create({
+      name,
+      teamMembers,
+      minEventDuration,
+      nameFormat,
+    });
     teamCalendar = result.calendar;
     teamCalendarId = result.id;
   }
@@ -56,6 +67,7 @@ export const calendarFormFields = {
   name: "name",
   teamMembers: "teamMembers",
   minEventDuration: "minEventDuration",
+  nameFormat: "nameFormat",
 };
 
 export function SubmitUpdateCalendarFormAction(teamCalendarId?: TeamCalendarId) {

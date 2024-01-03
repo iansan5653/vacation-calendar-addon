@@ -2,7 +2,7 @@ import { LinkedCalendarController } from "../controllers/LinkedCalendarControlle
 import { DeleteCalendarAction } from "../endpoints/onDeleteCalendar";
 import { RecreateLinkedCalendarAction } from "../endpoints/onRecreateLinkedCalendar";
 import { StartUpdateCalendarAction } from "../endpoints/onStartUpdateCalendar";
-import { TeamCalendar } from "../models/TeamCalendar";
+import { NameFormat, TeamCalendar } from "../models/TeamCalendar";
 import { TeamCalendarId } from "../models/TeamCalendarId";
 import { googleCalendarSettingsUrl } from "./utils/googleCalendar";
 
@@ -37,6 +37,11 @@ function CalendarSettingsSection(calendarId: TeamCalendarId, calendar: TeamCalen
       CardService.newDecoratedText()
         .setTopLabel("Minimum event duration")
         .setText(`${calendar.minEventDuration} hours`),
+    )
+    .addWidget(
+      CardService.newDecoratedText()
+        .setTopLabel("Team member name format")
+        .setText(NameFormat.labels[calendar.nameFormat]),
     )
     .addWidget(CalendarActions(calendarId));
 }

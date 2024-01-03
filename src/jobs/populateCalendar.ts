@@ -1,6 +1,7 @@
 import { populateWindow } from "../config";
 import { LinkedCalendarController } from "../controllers/LinkedCalendarController";
 import { TeamCalendarController } from "../controllers/TeamCalendarController";
+import { NameFormat } from "../models/TeamCalendar";
 import { TeamCalendarId } from "../models/TeamCalendarId";
 import { add, differenceInMinutes, parseISO } from "date-fns";
 
@@ -66,17 +67,24 @@ function createTeamCalendarEvent(
   ).id;
 }
 
-function getTeamMemberName(email: string) {
-  return (
-    // not-yet-typed, see https://developers.google.com/people/api/rest/v1/people/searchDirectoryPeople
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (People.People! as any).searchDirectoryPeople({
-      query: email,
-      readMask: "names",
-      sources: ["DIRECTORY_SOURCE_TYPE_DOMAIN_PROFILE", "DIRECTORY_SOURCE_TYPE_DOMAIN_CONTACT"],
-      pageSize: 1,
-    }).people?.[0]?.names?.[0]?.displayName ?? email
-  );
+function getTeamMemberName(email: string, format: NameFormat) {
+  switch (format) {
+    case "email":
+      return email;
+    case "username":
+      return email.split("@")[0];
+    case "name":
+      return (
+        // not-yet-typed, see https://developers.google.com/people/api/rest/v1/people/searchDirectoryPeople
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (People.People! as any).searchDirectoryPeople({
+          query: email,
+          readMask: "names",
+          sources: ["DIRECTORY_SOURCE_TYPE_DOMAIN_PROFILE", "DIRECTORY_SOURCE_TYPE_DOMAIN_CONTACT"],
+          pageSize: 1,
+        }).people?.[0]?.names?.[0]?.displayName ?? email
+      );
+  }
 }
 
 function deleteEvent(calendarId: string, eventId: string) {
@@ -114,7 +122,7 @@ export function populateCalendar(
   // Repopulate the calendar
   const newManagedEventIds = [];
   for (const teamMemberEmail of calendar.teamMembers) {
-    const name = getTeamMemberName(teamMemberEmail);
+    const name = getTeamMemberName(teamMemberEmail, calendar.nameFormat);
 
     for (const sourceEvent of getOutOfOfficeEvents(
       teamMemberEmail,

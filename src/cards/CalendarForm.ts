@@ -3,7 +3,7 @@ import {
   SubmitUpdateCalendarFormAction,
   calendarFormFields,
 } from "../endpoints/onSubmitCalendarForm";
-import { TeamCalendar } from "../models/TeamCalendar";
+import { NameFormat, TeamCalendar } from "../models/TeamCalendar";
 import { TeamCalendarId } from "../models/TeamCalendarId";
 
 function CalendarNameInput(value?: string) {
@@ -31,6 +31,18 @@ function MinDurationInput(value?: string) {
     .setValue(value ?? "4");
 }
 
+function NameFormatSelector(value: NameFormat = "name") {
+  let widget = CardService.newSelectionInput()
+    .setFieldName(calendarFormFields.nameFormat)
+    .setType(CardService.SelectionInputType.RADIO_BUTTON)
+    .setTitle("Team member name format");
+
+  for (const nameFormat of NameFormat.values)
+    widget = widget.addItem(NameFormat.labels[nameFormat], nameFormat, nameFormat === value);
+
+  return widget;
+}
+
 function SubmitButton(teamCalendarId?: TeamCalendarId) {
   return CardService.newTextButton()
     .setText("Submit")
@@ -56,6 +68,7 @@ export function CalendarFormCard(calendar?: { id: TeamCalendarId; calendar: Team
         .addWidget(CalendarNameInput(calendar?.calendar.name))
         .addWidget(TeamMembersInput(calendar?.calendar.teamMembers))
         .addWidget(MinDurationInput(calendar?.calendar.minEventDuration?.toString(10)))
+        .addWidget(NameFormatSelector(calendar?.calendar.nameFormat))
         .addWidget(buttons),
     )
     .build();
