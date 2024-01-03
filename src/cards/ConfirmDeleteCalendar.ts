@@ -29,7 +29,7 @@ function DeleteGoogleCalendarSwitch() {
 function DeleteLinkedCalendarWidget(calendar: GoogleAppsScript.Calendar.Calendar) {
   return CardService.newDecoratedText()
     .setTopLabel("Linked Google calendar")
-    .setText(`Delete ${formatGoogleCalendarName(calendar)}?`)
+    .setText(`Also delete linked calendar (${formatGoogleCalendarName(calendar)})?`)
     .setWrapText(true)
     .setSwitchControl(DeleteGoogleCalendarSwitch());
 }
