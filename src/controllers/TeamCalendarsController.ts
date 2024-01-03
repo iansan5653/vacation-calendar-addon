@@ -1,11 +1,11 @@
 import { TeamCalendar } from "../models/TeamCalendar";
-import { TeamCalendarKey } from "../models/TeamCalendarKey";
+import { TeamCalendarId } from "../models/TeamCalendarKey";
 
 export const TeamCalendarsController = {
   /** Get all team calendars. */
   read() {
     return Object.entries(PropertiesService.getUserProperties().getProperties())
-      .filter((entry): entry is [TeamCalendarKey, string] => TeamCalendarKey.is(entry[0]))
+      .filter((entry): entry is [TeamCalendarId, string] => TeamCalendarId.is(entry[0]))
       .map(([key, json]) => [key, JSON.parse(json) as TeamCalendar] as const);
   },
 };

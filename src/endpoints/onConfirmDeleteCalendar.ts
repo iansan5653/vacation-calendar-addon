@@ -1,6 +1,6 @@
 import { LinkedCalendarController } from "../controllers/LinkedCalendarController";
 import { TeamCalendarController } from "../controllers/TeamCalendarController";
-import { TeamCalendarKey } from "../models/TeamCalendarKey";
+import { TeamCalendarId } from "../models/TeamCalendarKey";
 import { GoHomeNavigation } from "./onGoHome";
 import { Endpoint } from "./utils/Endpoint";
 import { CalendarKeyParameters } from "./utils/Parameters";
@@ -30,7 +30,7 @@ export const onConfirmDeleteCalendar: Endpoint = ({ commonEventObject }) => {
     .build();
 };
 
-export function ConfirmDeleteCalendarAction(calendarKey: TeamCalendarKey) {
+export function ConfirmDeleteCalendarAction(calendarKey: TeamCalendarId) {
   return CardService.newAction()
     .setFunctionName(onConfirmDeleteCalendar.name)
     .setParameters(new CalendarKeyParameters().setCalendarKey(calendarKey).build());

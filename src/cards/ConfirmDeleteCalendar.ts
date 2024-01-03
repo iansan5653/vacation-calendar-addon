@@ -5,10 +5,10 @@ import {
   deleteCalendarFormFields,
 } from "../endpoints/onConfirmDeleteCalendar";
 import { GoBackAction } from "../endpoints/onGoBack";
-import { TeamCalendarKey } from "../models/TeamCalendarKey";
+import { TeamCalendarId } from "../models/TeamCalendarKey";
 import { formatGoogleCalendarName } from "./utils/formatGoogleCalendarName";
 
-function ConfirmButton(key: TeamCalendarKey) {
+function ConfirmButton(key: TeamCalendarId) {
   return CardService.newTextButton()
     .setText("Delete")
     .setOnClickAction(ConfirmDeleteCalendarAction(key));
@@ -34,7 +34,7 @@ function DeleteLinkedCalendarWidget(calendar: GoogleAppsScript.Calendar.Calendar
     .setSwitchControl(DeleteGoogleCalendarSwitch());
 }
 
-export const ConfirmDeleteCalendarCard = (key: TeamCalendarKey) => {
+export const ConfirmDeleteCalendarCard = (key: TeamCalendarId) => {
   const buttons = CardService.newButtonSet()
     .addButton(ConfirmButton(key))
     .addButton(CancelButton());

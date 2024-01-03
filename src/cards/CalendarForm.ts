@@ -4,7 +4,7 @@ import {
   calendarFormFields,
 } from "../endpoints/onSubmitCalendarForm";
 import { TeamCalendar } from "../models/TeamCalendar";
-import { TeamCalendarKey } from "../models/TeamCalendarKey";
+import { TeamCalendarId } from "../models/TeamCalendarKey";
 
 function CalendarNameInput(value?: string) {
   return CardService.newTextInput()
@@ -30,7 +30,7 @@ function MinDurationInput(value?: string) {
     .setValue(value ?? "4");
 }
 
-function SubmitButton(key?: TeamCalendarKey) {
+function SubmitButton(key?: TeamCalendarId) {
   return CardService.newTextButton()
     .setText("Submit")
     .setOnClickAction(SubmitUpdateCalendarFormAction(key));
@@ -40,7 +40,7 @@ function CancelButton() {
   return CardService.newTextButton().setText("Cancel").setOnClickAction(GoBackAction());
 }
 
-export function CalendarFormCard(calendar?: { key: TeamCalendarKey; calendar: TeamCalendar }) {
+export function CalendarFormCard(calendar?: { key: TeamCalendarId; calendar: TeamCalendar }) {
   const title = calendar?.calendar ? `Edit "${calendar.calendar.name}"` : "New calendar";
 
   const buttons = CardService.newButtonSet()

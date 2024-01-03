@@ -1,6 +1,6 @@
 import { CalendarFormCard } from "../cards/CalendarForm";
 import { TeamCalendarController } from "../controllers/TeamCalendarController";
-import { TeamCalendarKey } from "../models/TeamCalendarKey";
+import { TeamCalendarId } from "../models/TeamCalendarKey";
 import { Endpoint } from "./utils/Endpoint";
 import { CalendarKeyParameters } from "./utils/Parameters";
 
@@ -17,7 +17,7 @@ export const onStartUpdateCalendar: Endpoint = ({ commonEventObject }) => {
   return CardService.newActionResponseBuilder().setNavigation(navigation).build();
 };
 
-export function StartUpdateCalendarAction(calendarKey?: TeamCalendarKey) {
+export function StartUpdateCalendarAction(calendarKey?: TeamCalendarId) {
   return CardService.newAction()
     .setFunctionName(onStartUpdateCalendar.name)
     .setParameters(new CalendarKeyParameters().setCalendarKey(calendarKey).build());

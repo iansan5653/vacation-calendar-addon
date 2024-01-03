@@ -1,5 +1,5 @@
 import { NewTeamCalendar, TeamCalendar } from "../models/TeamCalendar";
-import { TeamCalendarKey } from "../models/TeamCalendarKey";
+import { TeamCalendarId } from "../models/TeamCalendarKey";
 import { LinkedCalendarController } from "./LinkedCalendarController";
 
 export const TeamCalendarController = {
@@ -14,23 +14,23 @@ export const TeamCalendarController = {
       minEventDuration,
     };
 
-    const key = TeamCalendarKey.forGoogleCalendarId(googleCalendarId);
+    const key = TeamCalendarId.new();
     PropertiesService.getUserProperties().setProperty(key, JSON.stringify(calendar));
 
     return {
-      key,
+      id: key,
       calendar,
     };
   },
 
-  read(id: TeamCalendarKey) {
+  read(id: TeamCalendarId) {
     const json = PropertiesService.getUserProperties().getProperty(id);
     if (!json) return undefined;
 
     return JSON.parse(json) as TeamCalendar;
   },
 
-  update(id: TeamCalendarKey, data: Partial<Omit<TeamCalendar, "googleCalendarId">>) {
+  update(id: TeamCalendarId, data: Partial<TeamCalendar>) {
     const currentCalendar = TeamCalendarController.read(id);
 
     if (!currentCalendar) throw new Error("Failed to update calendar: not found");
@@ -39,10 +39,13 @@ export const TeamCalendarController = {
 
     PropertiesService.getUserProperties().setProperty(id, JSON.stringify(updatedCalendar));
 
-    if ("name" in data) LinkedCalendarController.read(currentCalendar.googleCalendarId)?.setName(updatedCalendar.name);
+    if ("name" in data)
+      LinkedCalendarController.read(currentCalendar.googleCalendarId)?.setName(
+        updatedCalendar.name,
+      );
   },
 
-  delete(id: TeamCalendarKey) {
+  delete(id: TeamCalendarId) {
     PropertiesService.getUserProperties().deleteProperty(id);
   },
 };

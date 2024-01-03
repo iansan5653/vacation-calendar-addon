@@ -2,7 +2,7 @@ import { TeamCalendarsController } from "../controllers/TeamCalendarsController"
 import { OnClickCalendarGridItemAction } from "../endpoints/onClickCalendarGridItem";
 import { StartUpdateCalendarAction } from "../endpoints/onStartUpdateCalendar";
 import { TeamCalendar } from "../models/TeamCalendar";
-import { TeamCalendarKey } from "../models/TeamCalendarKey";
+import { TeamCalendarId } from "../models/TeamCalendarKey";
 
 function CreateButton() {
   return CardService.newTextButton()
@@ -16,11 +16,11 @@ function EmptyText() {
   );
 }
 
-function CalendarGridItem(key: TeamCalendarKey, { name }: TeamCalendar) {
+function CalendarGridItem(key: TeamCalendarId, { name }: TeamCalendar) {
   return CardService.newGridItem().setIdentifier(key).setTitle(name);
 }
 
-function CalendarsGrid(calendars: (readonly [TeamCalendarKey, TeamCalendar])[]) {
+function CalendarsGrid(calendars: (readonly [TeamCalendarId, TeamCalendar])[]) {
   let grid = CardService.newGrid()
     .setTitle("Your team calendars")
     .setBorderStyle(

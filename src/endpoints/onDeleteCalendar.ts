@@ -1,5 +1,5 @@
 import { ConfirmDeleteCalendarCard } from "../cards/ConfirmDeleteCalendar";
-import { TeamCalendarKey } from "../models/TeamCalendarKey";
+import { TeamCalendarId } from "../models/TeamCalendarKey";
 import { Endpoint } from "./utils/Endpoint";
 import { CalendarKeyParameters } from "./utils/Parameters";
 
@@ -12,7 +12,7 @@ export const onDeleteCalendar: Endpoint = ({ commonEventObject }) => {
     .build();
 };
 
-export function DeleteCalendarAction(calendarKey: TeamCalendarKey) {
+export function DeleteCalendarAction(calendarKey: TeamCalendarId) {
   return CardService.newAction()
     .setFunctionName(onDeleteCalendar.name)
     .setParameters(new CalendarKeyParameters().setCalendarKey(calendarKey).build());

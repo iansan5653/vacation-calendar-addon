@@ -2,13 +2,13 @@ import { LinkedCalendarController } from "../controllers/LinkedCalendarControlle
 import { DeleteCalendarAction } from "../endpoints/onDeleteCalendar";
 import { StartUpdateCalendarAction } from "../endpoints/onStartUpdateCalendar";
 import { TeamCalendar } from "../models/TeamCalendar";
-import { TeamCalendarKey } from "../models/TeamCalendarKey";
+import { TeamCalendarId } from "../models/TeamCalendarKey";
 
 function CalendarHeader(calendar: TeamCalendar) {
   return CardService.newCardHeader().setTitle(calendar.name);
 }
 
-function CalendarActions(key: TeamCalendarKey) {
+function CalendarActions(key: TeamCalendarId) {
   return CardService.newButtonSet()
     .addButton(
       CardService.newTextButton().setText("Edit").setOnClickAction(StartUpdateCalendarAction(key)),
@@ -18,7 +18,7 @@ function CalendarActions(key: TeamCalendarKey) {
     );
 }
 
-function CalendarSettingsSection(key: TeamCalendarKey, calendar: TeamCalendar) {
+function CalendarSettingsSection(key: TeamCalendarId, calendar: TeamCalendar) {
   return CardService.newCardSection()
     .setHeader("Settings")
     .addWidget(
@@ -55,7 +55,7 @@ function LinkedCalendarSection(calendar: TeamCalendar) {
   );
 }
 
-export function CalendarCard(key: TeamCalendarKey, calendar: TeamCalendar) {
+export function CalendarCard(key: TeamCalendarId, calendar: TeamCalendar) {
   return CardService.newCardBuilder()
     .setHeader(CalendarHeader(calendar))
     .addSection(LinkedCalendarSection(calendar))

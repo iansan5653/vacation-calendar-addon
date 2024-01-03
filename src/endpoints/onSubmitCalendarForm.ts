@@ -1,5 +1,5 @@
 import { TeamCalendarController } from "../controllers/TeamCalendarController";
-import { TeamCalendarKey } from "../models/TeamCalendarKey";
+import { TeamCalendarId } from "../models/TeamCalendarKey";
 import { Endpoint } from "./utils/Endpoint";
 import { GoHomeNavigation } from "./onGoHome";
 import { CalendarKeyParameters } from "./utils/Parameters";
@@ -29,7 +29,7 @@ export const onSubmitCalendarForm: Endpoint = ({ commonEventObject }) => {
   if (key) {
     TeamCalendarController.update(key, { name, teamMembers, minEventDuration });
   } else {
-    key = TeamCalendarController.create({ name, teamMembers, minEventDuration }).key;
+    key = TeamCalendarController.create({ name, teamMembers, minEventDuration }).id;
   }
 
   QueueController.queueOnce(onPopulateCalendars.name, { seconds: 1 });
@@ -52,7 +52,7 @@ export const calendarFormFields = {
   minEventDuration: "minEventDuration",
 };
 
-export function SubmitUpdateCalendarFormAction(calendarKey?: TeamCalendarKey) {
+export function SubmitUpdateCalendarFormAction(calendarKey?: TeamCalendarId) {
   return CardService.newAction()
     .setFunctionName(onSubmitCalendarForm.name)
     .setParameters(new CalendarKeyParameters().setCalendarKey(calendarKey).build());

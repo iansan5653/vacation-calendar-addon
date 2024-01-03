@@ -1,7 +1,7 @@
 import { populateWindow } from "../config";
 import { LinkedCalendarController } from "../controllers/LinkedCalendarController";
 import { TeamCalendarController } from "../controllers/TeamCalendarController";
-import { TeamCalendarKey } from "../models/TeamCalendarKey";
+import { TeamCalendarId } from "../models/TeamCalendarKey";
 import { add, differenceInMinutes, parseISO } from "date-fns";
 
 type CalendarApiEvent = GoogleAppsScript.Calendar.Schema.Event;
@@ -68,7 +68,7 @@ function createTeamCalendarEvent(
 
 /** Completely wipe and repopulate a calendar. */
 export function populateCalendar(
-  calendarKey: TeamCalendarKey,
+  calendarKey: TeamCalendarId,
   calendar = TeamCalendarController.read(calendarKey),
 ) {
   Logger.log(`Populating calendar ${calendarKey}: ${JSON.stringify(calendar)})}`);

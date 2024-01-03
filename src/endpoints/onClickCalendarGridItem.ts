@@ -1,6 +1,6 @@
 import { CalendarCard } from "../cards/Calendar";
 import { TeamCalendarController } from "../controllers/TeamCalendarController";
-import { TeamCalendarKey } from "../models/TeamCalendarKey";
+import { TeamCalendarId } from "../models/TeamCalendarKey";
 import { Endpoint } from "./utils/Endpoint";
 import { GridItemClickParameters } from "./utils/Parameters";
 
@@ -10,7 +10,7 @@ export const onClickCalendarGridItem: Endpoint = ({ commonEventObject }) => {
   const identifier = new GridItemClickParameters(
     commonEventObject.parameters,
   ).getGridItemIdentifier();
-  const key = identifier && TeamCalendarKey.is(identifier) ? identifier : undefined;
+  const key = identifier && TeamCalendarId.is(identifier) ? identifier : undefined;
 
   const calendar = key ? TeamCalendarController.read(key) : undefined;
 

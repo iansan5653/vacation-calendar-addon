@@ -1,4 +1,4 @@
-import { TeamCalendarKey } from "../../models/TeamCalendarKey";
+import { TeamCalendarId } from "../../models/TeamCalendarKey";
 
 export type BooleanString = "true" | "false";
 
@@ -40,19 +40,19 @@ export class Parameters<T extends Record<string, string>> {
 }
 
 export interface CalendarKeyParamsShape {
-  calendarKey: TeamCalendarKey;
+  calendarKey: TeamCalendarId;
 }
 
 export class CalendarKeyParameters<
-  T extends { calendarKey: TeamCalendarKey },
+  T extends { calendarKey: TeamCalendarId },
 > extends Parameters<T> {
-  setCalendarKey(key: TeamCalendarKey | undefined): this {
+  setCalendarKey(key: TeamCalendarId | undefined): this {
     return this.set("calendarKey", key);
   }
 
-  getCalendarKey(): TeamCalendarKey | undefined {
+  getCalendarKey(): TeamCalendarId | undefined {
     const key = this.get("calendarKey");
-    return key && TeamCalendarKey.is(key) ? key : undefined;
+    return key && TeamCalendarId.is(key) ? key : undefined;
   }
 }
 
