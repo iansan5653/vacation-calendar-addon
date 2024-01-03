@@ -51,7 +51,7 @@ function LinkedCalendarSection(calendar: TeamCalendar) {
         `<b><font color="${googleCalendar.getColor()}">⬤</font> ${googleCalendar.getName()}</b>`,
       )
       .setBottomLabel(
-        "Use the linked calendar's settings (accessible in the left sidebar) to update sharing, notifications, and more.",
+        "Use the linked calendar's settings (in the left sidebar) to update sharing, notifications, and more.",
       ),
   );
 }
@@ -59,7 +59,7 @@ function LinkedCalendarSection(calendar: TeamCalendar) {
 export function CalendarCard(key: TeamCalendarKey, calendar: TeamCalendar) {
   return CardService.newCardBuilder()
     .setHeader(CalendarHeader(calendar))
-    .addSection(CalendarSettingsSection(key, calendar))
     .addSection(LinkedCalendarSection(calendar))
+    .addSection(CalendarSettingsSection(key, calendar))
     .build();
 }

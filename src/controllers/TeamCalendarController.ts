@@ -1,19 +1,20 @@
 import { NewTeamCalendar, TeamCalendar } from "../models/TeamCalendar";
 import { TeamCalendarKey } from "../models/TeamCalendarKey";
+import { LinkedCalendarController } from "./LinkedCalendarController";
 
 export const TeamCalendarController = {
   create({ name, teamMembers, minEventDuration }: NewTeamCalendar) {
-    const googleCalendar = CalendarApp.createCalendar(name);
+    const googleCalendarId = LinkedCalendarController.create(name);
 
     const calendar: TeamCalendar = {
       name,
       teamMembers,
-      googleCalendarId: googleCalendar.getId(),
+      googleCalendarId,
       managedEventIds: [],
       minEventDuration,
     };
 
-    const key = TeamCalendarKey.forGoogleCalendarId(googleCalendar.getId());
+    const key = TeamCalendarKey.forGoogleCalendarId(googleCalendarId);
     PropertiesService.getUserProperties().setProperty(key, JSON.stringify(calendar));
 
     return {
@@ -38,8 +39,7 @@ export const TeamCalendarController = {
 
     PropertiesService.getUserProperties().setProperty(id, JSON.stringify(updatedCalendar));
 
-    if ("name" in data)
-      CalendarApp.getCalendarById(currentCalendar.googleCalendarId).setName(updatedCalendar.name);
+    if ("name" in data) LinkedCalendarController.read(currentCalendar.googleCalendarId)?.setName(updatedCalendar.name);
   },
 
   delete(id: TeamCalendarKey) {

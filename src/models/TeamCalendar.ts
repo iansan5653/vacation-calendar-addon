@@ -1,3 +1,5 @@
+import {GoogleCalendarId} from "./GoogleCalendarId";
+
 export interface NewTeamCalendar {
   name: string;
   /** Email addresses */
@@ -7,6 +9,6 @@ export interface NewTeamCalendar {
 }
 
 export interface TeamCalendar extends NewTeamCalendar {
-  googleCalendarId: string;
+  googleCalendarId: GoogleCalendarId;
   managedEventIds: string[];
 }
