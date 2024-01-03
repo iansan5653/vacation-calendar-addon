@@ -1,5 +1,6 @@
 import { LinkedCalendarController } from "../controllers/LinkedCalendarController";
 import { DeleteCalendarAction } from "../endpoints/onDeleteCalendar";
+import { RecreateLinkedCalendarAction } from "../endpoints/onRecreateLinkedCalendar";
 import { StartUpdateCalendarAction } from "../endpoints/onStartUpdateCalendar";
 import { TeamCalendar } from "../models/TeamCalendar";
 import { TeamCalendarId } from "../models/TeamCalendarId";
@@ -11,14 +12,18 @@ function CalendarHeader(calendar: TeamCalendar) {
 function CalendarActions(teamCalendarId: TeamCalendarId) {
   return CardService.newButtonSet()
     .addButton(
-      CardService.newTextButton().setText("Edit").setOnClickAction(StartUpdateCalendarAction(teamCalendarId)),
+      CardService.newTextButton()
+        .setText("Edit")
+        .setOnClickAction(StartUpdateCalendarAction(teamCalendarId)),
     )
     .addButton(
-      CardService.newTextButton().setText("Delete").setOnClickAction(DeleteCalendarAction(teamCalendarId)),
+      CardService.newTextButton()
+        .setText("Delete")
+        .setOnClickAction(DeleteCalendarAction(teamCalendarId)),
     );
 }
 
-function CalendarSettingsSection(teamCalendarId: TeamCalendarId, calendar: TeamCalendar) {
+function CalendarSettingsSection(calendarId: TeamCalendarId, calendar: TeamCalendar) {
   return CardService.newCardSection()
     .setHeader("Settings")
     .addWidget(
@@ -31,17 +36,25 @@ function CalendarSettingsSection(teamCalendarId: TeamCalendarId, calendar: TeamC
         .setTopLabel("Minimum event duration")
         .setText(`${calendar.minEventDuration} hours`),
     )
-    .addWidget(CalendarActions(teamCalendarId));
+    .addWidget(CalendarActions(calendarId));
 }
 
-function LinkedCalendarSection(calendar: TeamCalendar) {
+function LinkedCalendarSection(calendarId: TeamCalendarId, calendar: TeamCalendar) {
   const section = CardService.newCardSection().setHeader("Linked Google calendar");
 
   const googleCalendar = LinkedCalendarController.read(calendar.googleCalendarId);
   if (!googleCalendar) {
-    return section.addWidget(
-      CardService.newTextParagraph().setText("⚠️ No linked calendar found. Maybe it was deleted?"),
-    );
+    return section
+      .addWidget(
+        CardService.newTextParagraph().setText(
+          "⚠️ No linked calendar found. Maybe it was deleted?",
+        ),
+      )
+      .addWidget(
+        CardService.newTextButton()
+          .setText("Recreate")
+          .setOnClickAction(RecreateLinkedCalendarAction(calendarId)),
+      );
   }
 
   return section.addWidget(
@@ -58,7 +71,7 @@ function LinkedCalendarSection(calendar: TeamCalendar) {
 export function CalendarCard(id: TeamCalendarId, calendar: TeamCalendar) {
   return CardService.newCardBuilder()
     .setHeader(CalendarHeader(calendar))
-    .addSection(LinkedCalendarSection(calendar))
+    .addSection(LinkedCalendarSection(id, calendar))
     .addSection(CalendarSettingsSection(id, calendar))
     .build();
 }
