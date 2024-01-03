@@ -5,7 +5,7 @@ import {
   deleteCalendarFormFields,
 } from "../endpoints/onConfirmDeleteCalendar";
 import { GoBackAction } from "../endpoints/onGoBack";
-import { TeamCalendarId } from "../models/TeamCalendarKey";
+import { TeamCalendarId } from "../models/TeamCalendarId";
 import { formatGoogleCalendarName } from "./utils/formatGoogleCalendarName";
 
 function ConfirmButton(key: TeamCalendarId) {

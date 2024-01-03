@@ -1,7 +1,7 @@
 import { populateWindow } from "../config";
 import { LinkedCalendarController } from "../controllers/LinkedCalendarController";
 import { TeamCalendarController } from "../controllers/TeamCalendarController";
-import { TeamCalendarId } from "../models/TeamCalendarKey";
+import { TeamCalendarId } from "../models/TeamCalendarId";
 import { add, differenceInMinutes, parseISO } from "date-fns";
 
 type CalendarApiEvent = GoogleAppsScript.Calendar.Schema.Event;

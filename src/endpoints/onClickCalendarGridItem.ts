@@ -1,6 +1,6 @@
 import { CalendarCard } from "../cards/Calendar";
 import { TeamCalendarController } from "../controllers/TeamCalendarController";
-import { TeamCalendarId } from "../models/TeamCalendarKey";
+import { TeamCalendarId } from "../models/TeamCalendarId";
 import { Endpoint } from "./utils/Endpoint";
 import { GridItemClickParameters } from "./utils/Parameters";
 

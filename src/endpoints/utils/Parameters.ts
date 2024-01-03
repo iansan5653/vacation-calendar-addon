@@ -1,4 +1,4 @@
-import { TeamCalendarId } from "../../models/TeamCalendarKey";
+import { TeamCalendarId } from "../../models/TeamCalendarId";
 
 export type BooleanString = "true" | "false";
 

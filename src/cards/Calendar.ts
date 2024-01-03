@@ -2,7 +2,7 @@ import { LinkedCalendarController } from "../controllers/LinkedCalendarControlle
 import { DeleteCalendarAction } from "../endpoints/onDeleteCalendar";
 import { StartUpdateCalendarAction } from "../endpoints/onStartUpdateCalendar";
 import { TeamCalendar } from "../models/TeamCalendar";
-import { TeamCalendarId } from "../models/TeamCalendarKey";
+import { TeamCalendarId } from "../models/TeamCalendarId";
 
 function CalendarHeader(calendar: TeamCalendar) {
   return CardService.newCardHeader().setTitle(calendar.name);

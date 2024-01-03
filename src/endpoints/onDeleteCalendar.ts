@@ -1,5 +1,5 @@
 import { ConfirmDeleteCalendarCard } from "../cards/ConfirmDeleteCalendar";
-import { TeamCalendarId } from "../models/TeamCalendarKey";
+import { TeamCalendarId } from "../models/TeamCalendarId";
 import { Endpoint } from "./utils/Endpoint";
 import { CalendarKeyParameters } from "./utils/Parameters";
 

@@ -1,5 +1,5 @@
 import { TeamCalendarController } from "../controllers/TeamCalendarController";
-import { TeamCalendarId } from "../models/TeamCalendarKey";
+import { TeamCalendarId } from "../models/TeamCalendarId";
 import { Endpoint } from "./utils/Endpoint";
 import { GoHomeNavigation } from "./onGoHome";
 import { CalendarKeyParameters } from "./utils/Parameters";

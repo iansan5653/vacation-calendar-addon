@@ -2,7 +2,7 @@ import { TeamCalendarsController } from "../controllers/TeamCalendarsController"
 import { OnClickCalendarGridItemAction } from "../endpoints/onClickCalendarGridItem";
 import { StartUpdateCalendarAction } from "../endpoints/onStartUpdateCalendar";
 import { TeamCalendar } from "../models/TeamCalendar";
-import { TeamCalendarId } from "../models/TeamCalendarKey";
+import { TeamCalendarId } from "../models/TeamCalendarId";
 
 function CreateButton() {
   return CardService.newTextButton()

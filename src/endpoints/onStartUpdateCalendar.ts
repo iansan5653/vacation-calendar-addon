@@ -1,6 +1,6 @@
 import { CalendarFormCard } from "../cards/CalendarForm";
 import { TeamCalendarController } from "../controllers/TeamCalendarController";
-import { TeamCalendarId } from "../models/TeamCalendarKey";
+import { TeamCalendarId } from "../models/TeamCalendarId";
 import { Endpoint } from "./utils/Endpoint";
 import { CalendarKeyParameters } from "./utils/Parameters";
 

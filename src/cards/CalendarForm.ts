@@ -4,7 +4,7 @@ import {
   calendarFormFields,
 } from "../endpoints/onSubmitCalendarForm";
 import { TeamCalendar } from "../models/TeamCalendar";
-import { TeamCalendarId } from "../models/TeamCalendarKey";
+import { TeamCalendarId } from "../models/TeamCalendarId";
 
 function CalendarNameInput(value?: string) {
   return CardService.newTextInput()

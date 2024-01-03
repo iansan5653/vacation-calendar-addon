@@ -1,5 +1,5 @@
 import { TeamCalendar } from "../models/TeamCalendar";
-import { TeamCalendarId } from "../models/TeamCalendarKey";
+import { TeamCalendarId } from "../models/TeamCalendarId";
 
 export const TeamCalendarsController = {
   /** Get all team calendars. */

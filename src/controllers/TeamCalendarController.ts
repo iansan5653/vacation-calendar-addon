@@ -1,5 +1,5 @@
 import { NewTeamCalendar, TeamCalendar } from "../models/TeamCalendar";
-import { TeamCalendarId } from "../models/TeamCalendarKey";
+import { TeamCalendarId } from "../models/TeamCalendarId";
 import { LinkedCalendarController } from "./LinkedCalendarController";
 
 export const TeamCalendarController = {
