@@ -68,10 +68,10 @@ function createTeamCalendarEvent(
 
 /** Completely wipe and repopulate a calendar. */
 export function populateCalendar(
-  calendarKey: TeamCalendarId,
-  calendar = TeamCalendarController.read(calendarKey),
+  teamCalendarId: TeamCalendarId,
+  calendar = TeamCalendarController.read(teamCalendarId),
 ) {
-  Logger.log(`Populating calendar ${calendarKey}: ${JSON.stringify(calendar)})}`);
+  Logger.log(`Populating calendar ${teamCalendarId}: ${JSON.stringify(calendar)})}`);
   const now = new Date();
 
   if (!calendar) throw new Error("Failed to populate calendar: Team calendar not found");
@@ -99,5 +99,5 @@ export function populateCalendar(
       if (id) newManagedEventIds.push(id);
     }
 
-  TeamCalendarController.update(calendarKey, { managedEventIds: newManagedEventIds });
+  TeamCalendarController.update(teamCalendarId, { managedEventIds: newManagedEventIds });
 }

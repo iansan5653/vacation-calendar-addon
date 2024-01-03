@@ -6,6 +6,6 @@ export const TeamCalendarsController = {
   read() {
     return Object.entries(PropertiesService.getUserProperties().getProperties())
       .filter((entry): entry is [TeamCalendarId, string] => TeamCalendarId.is(entry[0]))
-      .map(([key, json]) => [key, JSON.parse(json) as TeamCalendar] as const);
+      .map(([id, json]) => [id, JSON.parse(json) as TeamCalendar] as const);
   },
 };

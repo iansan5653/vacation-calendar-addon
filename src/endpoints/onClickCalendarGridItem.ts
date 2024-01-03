@@ -10,14 +10,14 @@ export const onClickCalendarGridItem: Endpoint = ({ commonEventObject }) => {
   const identifier = new GridItemClickParameters(
     commonEventObject.parameters,
   ).getGridItemIdentifier();
-  const key = identifier && TeamCalendarId.is(identifier) ? identifier : undefined;
+  const teamCalendarId = identifier && TeamCalendarId.is(identifier) ? identifier : undefined;
 
-  const calendar = key ? TeamCalendarController.read(key) : undefined;
+  const calendar = teamCalendarId ? TeamCalendarController.read(teamCalendarId) : undefined;
 
-  if (!key) throw new Error("Malformed request: invalid calendar grid item identifier.");
+  if (!teamCalendarId) throw new Error("Malformed request: invalid calendar grid item identifier.");
   if (!calendar) throw new Error("Error: Calendar not found. Maybe it was deleted?");
 
-  const navigation = CardService.newNavigation().pushCard(CalendarCard(key, calendar));
+  const navigation = CardService.newNavigation().pushCard(CalendarCard(teamCalendarId, calendar));
   return CardService.newActionResponseBuilder().setNavigation(navigation).build();
 };
 

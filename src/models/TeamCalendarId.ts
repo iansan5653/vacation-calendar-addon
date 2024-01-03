@@ -1,7 +1,7 @@
 const PREFIX = "TEAM_CALENDAR_";
 
-export type TeamCalendarId = string & { __teamCalendarKey: never };
+export type TeamCalendarId = string & { __teamCalendarId: never };
 export const TeamCalendarId = {
   new: () => `${PREFIX}${Utilities.getUuid()}` as TeamCalendarId,
-  is: (key: string): key is TeamCalendarId => key.startsWith(PREFIX),
+  is: (str: string): str is TeamCalendarId => str.startsWith(PREFIX),
 };

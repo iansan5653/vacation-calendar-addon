@@ -39,20 +39,18 @@ export class Parameters<T extends Record<string, string>> {
   }
 }
 
-export interface CalendarKeyParamsShape {
-  calendarKey: TeamCalendarId;
-}
+export type TeamCalendarIdParamsShape = {
+  teamCalendarId: TeamCalendarId;
+};
 
-export class CalendarKeyParameters<
-  T extends { calendarKey: TeamCalendarId },
-> extends Parameters<T> {
-  setCalendarKey(key: TeamCalendarId | undefined): this {
-    return this.set("calendarKey", key);
+export class TeamCalendarIdParameters<T extends TeamCalendarIdParamsShape> extends Parameters<T> {
+  setId(key: TeamCalendarId | undefined): this {
+    return this.set("teamCalendarId", key);
   }
 
-  getCalendarKey(): TeamCalendarId | undefined {
-    const key = this.get("calendarKey");
-    return key && TeamCalendarId.is(key) ? key : undefined;
+  getId(): TeamCalendarId | undefined {
+    const value = this.get("teamCalendarId");
+    return value && TeamCalendarId.is(value) ? value : undefined;
   }
 }
 

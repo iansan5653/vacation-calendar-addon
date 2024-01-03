@@ -30,21 +30,21 @@ function MinDurationInput(value?: string) {
     .setValue(value ?? "4");
 }
 
-function SubmitButton(key?: TeamCalendarId) {
+function SubmitButton(teamCalendarId?: TeamCalendarId) {
   return CardService.newTextButton()
     .setText("Submit")
-    .setOnClickAction(SubmitUpdateCalendarFormAction(key));
+    .setOnClickAction(SubmitUpdateCalendarFormAction(teamCalendarId));
 }
 
 function CancelButton() {
   return CardService.newTextButton().setText("Cancel").setOnClickAction(GoBackAction());
 }
 
-export function CalendarFormCard(calendar?: { key: TeamCalendarId; calendar: TeamCalendar }) {
+export function CalendarFormCard(calendar?: { id: TeamCalendarId; calendar: TeamCalendar }) {
   const title = calendar?.calendar ? `Edit "${calendar.calendar.name}"` : "New calendar";
 
   const buttons = CardService.newButtonSet()
-    .addButton(SubmitButton(calendar?.key))
+    .addButton(SubmitButton(calendar?.id))
     .addButton(CancelButton());
 
   return CardService.newCardBuilder()

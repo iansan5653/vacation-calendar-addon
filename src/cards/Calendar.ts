@@ -8,17 +8,17 @@ function CalendarHeader(calendar: TeamCalendar) {
   return CardService.newCardHeader().setTitle(calendar.name);
 }
 
-function CalendarActions(key: TeamCalendarId) {
+function CalendarActions(teamCalendarId: TeamCalendarId) {
   return CardService.newButtonSet()
     .addButton(
-      CardService.newTextButton().setText("Edit").setOnClickAction(StartUpdateCalendarAction(key)),
+      CardService.newTextButton().setText("Edit").setOnClickAction(StartUpdateCalendarAction(teamCalendarId)),
     )
     .addButton(
-      CardService.newTextButton().setText("Delete").setOnClickAction(DeleteCalendarAction(key)),
+      CardService.newTextButton().setText("Delete").setOnClickAction(DeleteCalendarAction(teamCalendarId)),
     );
 }
 
-function CalendarSettingsSection(key: TeamCalendarId, calendar: TeamCalendar) {
+function CalendarSettingsSection(teamCalendarId: TeamCalendarId, calendar: TeamCalendar) {
   return CardService.newCardSection()
     .setHeader("Settings")
     .addWidget(
@@ -31,7 +31,7 @@ function CalendarSettingsSection(key: TeamCalendarId, calendar: TeamCalendar) {
         .setTopLabel("Minimum event duration")
         .setText(`${calendar.minEventDuration} hours`),
     )
-    .addWidget(CalendarActions(key));
+    .addWidget(CalendarActions(teamCalendarId));
 }
 
 function LinkedCalendarSection(calendar: TeamCalendar) {
@@ -55,10 +55,10 @@ function LinkedCalendarSection(calendar: TeamCalendar) {
   );
 }
 
-export function CalendarCard(key: TeamCalendarId, calendar: TeamCalendar) {
+export function CalendarCard(id: TeamCalendarId, calendar: TeamCalendar) {
   return CardService.newCardBuilder()
     .setHeader(CalendarHeader(calendar))
     .addSection(LinkedCalendarSection(calendar))
-    .addSection(CalendarSettingsSection(key, calendar))
+    .addSection(CalendarSettingsSection(id, calendar))
     .build();
 }

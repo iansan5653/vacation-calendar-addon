@@ -14,11 +14,11 @@ export const TeamCalendarController = {
       minEventDuration,
     };
 
-    const key = TeamCalendarId.new();
-    PropertiesService.getUserProperties().setProperty(key, JSON.stringify(calendar));
+    const id = TeamCalendarId.new();
+    PropertiesService.getUserProperties().setProperty(id, JSON.stringify(calendar));
 
     return {
-      id: key,
+      id,
       calendar,
     };
   },

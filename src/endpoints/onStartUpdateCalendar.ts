@@ -2,23 +2,23 @@ import { CalendarFormCard } from "../cards/CalendarForm";
 import { TeamCalendarController } from "../controllers/TeamCalendarController";
 import { TeamCalendarId } from "../models/TeamCalendarId";
 import { Endpoint } from "./utils/Endpoint";
-import { CalendarKeyParameters } from "./utils/Parameters";
+import { TeamCalendarIdParameters } from "./utils/Parameters";
 
 // Note: this is a global action, so if the function is renamed it must also be updated in the manifest
 export const onStartUpdateCalendar: Endpoint = ({ commonEventObject }) => {
-  const key = new CalendarKeyParameters(commonEventObject.parameters).getCalendarKey();
+  const teamCalendarId = new TeamCalendarIdParameters(commonEventObject.parameters).getId();
 
-  const calendar = key ? TeamCalendarController.read(key) : undefined;
+  const calendar = teamCalendarId ? TeamCalendarController.read(teamCalendarId) : undefined;
 
-  const args = key && calendar ? { key, calendar } : undefined;
+  const args = teamCalendarId && calendar ? { id: teamCalendarId, calendar } : undefined;
 
   const navigation = CardService.newNavigation().pushCard(CalendarFormCard(args));
 
   return CardService.newActionResponseBuilder().setNavigation(navigation).build();
 };
 
-export function StartUpdateCalendarAction(calendarKey?: TeamCalendarId) {
+export function StartUpdateCalendarAction(teamCalendarId?: TeamCalendarId) {
   return CardService.newAction()
     .setFunctionName(onStartUpdateCalendar.name)
-    .setParameters(new CalendarKeyParameters().setCalendarKey(calendarKey).build());
+    .setParameters(new TeamCalendarIdParameters().setId(teamCalendarId).build());
 }

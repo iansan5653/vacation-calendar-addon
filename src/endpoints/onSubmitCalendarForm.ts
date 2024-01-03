@@ -2,13 +2,13 @@ import { TeamCalendarController } from "../controllers/TeamCalendarController";
 import { TeamCalendarId } from "../models/TeamCalendarId";
 import { Endpoint } from "./utils/Endpoint";
 import { GoHomeNavigation } from "./onGoHome";
-import { CalendarKeyParameters } from "./utils/Parameters";
+import { TeamCalendarIdParameters } from "./utils/Parameters";
 import { QueueController } from "../controllers/QueueController";
 import { onPopulateCalendars } from "./onPopulateCalendars";
 
 export const onSubmitCalendarForm: Endpoint = ({ commonEventObject }) => {
-  let key = new CalendarKeyParameters(commonEventObject.parameters).getCalendarKey();
-  const isUpdate = !!key;
+  let teamCalendarId = new TeamCalendarIdParameters(commonEventObject.parameters).getId();
+  const isUpdate = !!teamCalendarId;
 
   const name = commonEventObject.formInputs[calendarFormFields.name]?.stringInputs?.value[0] ?? "";
 
@@ -26,10 +26,10 @@ export const onSubmitCalendarForm: Endpoint = ({ commonEventObject }) => {
       `Invalid minimum event duration: ${minEventDurationStr}. Must be a number greater than 0.`,
     );
 
-  if (key) {
-    TeamCalendarController.update(key, { name, teamMembers, minEventDuration });
+  if (teamCalendarId) {
+    TeamCalendarController.update(teamCalendarId, { name, teamMembers, minEventDuration });
   } else {
-    key = TeamCalendarController.create({ name, teamMembers, minEventDuration }).id;
+    teamCalendarId = TeamCalendarController.create({ name, teamMembers, minEventDuration }).id;
   }
 
   QueueController.queueOnce(onPopulateCalendars.name, { seconds: 1 });
@@ -52,8 +52,8 @@ export const calendarFormFields = {
   minEventDuration: "minEventDuration",
 };
 
-export function SubmitUpdateCalendarFormAction(calendarKey?: TeamCalendarId) {
+export function SubmitUpdateCalendarFormAction(teamCalendarId?: TeamCalendarId) {
   return CardService.newAction()
     .setFunctionName(onSubmitCalendarForm.name)
-    .setParameters(new CalendarKeyParameters().setCalendarKey(calendarKey).build());
+    .setParameters(new TeamCalendarIdParameters().setId(teamCalendarId).build());
 }

@@ -16,8 +16,8 @@ function EmptyText() {
   );
 }
 
-function CalendarGridItem(key: TeamCalendarId, { name }: TeamCalendar) {
-  return CardService.newGridItem().setIdentifier(key).setTitle(name);
+function CalendarGridItem(id: TeamCalendarId, { name }: TeamCalendar) {
+  return CardService.newGridItem().setIdentifier(id).setTitle(name);
 }
 
 function CalendarsGrid(calendars: (readonly [TeamCalendarId, TeamCalendar])[]) {
@@ -27,8 +27,8 @@ function CalendarsGrid(calendars: (readonly [TeamCalendarId, TeamCalendar])[]) {
       CardService.newBorderStyle().setType(CardService.BorderType.STROKE).setCornerRadius(8),
     )
     .setOnClickAction(OnClickCalendarGridItemAction());
-  for (const [key, calendar] of calendars) {
-    grid = grid.addItem(CalendarGridItem(key, calendar));
+  for (const [id, calendar] of calendars) {
+    grid = grid.addItem(CalendarGridItem(id, calendar));
   }
   return grid;
 }

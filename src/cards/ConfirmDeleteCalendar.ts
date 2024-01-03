@@ -8,10 +8,10 @@ import { GoBackAction } from "../endpoints/onGoBack";
 import { TeamCalendarId } from "../models/TeamCalendarId";
 import { formatGoogleCalendarName } from "./utils/formatGoogleCalendarName";
 
-function ConfirmButton(key: TeamCalendarId) {
+function ConfirmButton(teamCalendarId: TeamCalendarId) {
   return CardService.newTextButton()
     .setText("Delete")
-    .setOnClickAction(ConfirmDeleteCalendarAction(key));
+    .setOnClickAction(ConfirmDeleteCalendarAction(teamCalendarId));
 }
 
 function CancelButton() {
@@ -34,12 +34,12 @@ function DeleteLinkedCalendarWidget(calendar: GoogleAppsScript.Calendar.Calendar
     .setSwitchControl(DeleteGoogleCalendarSwitch());
 }
 
-export const ConfirmDeleteCalendarCard = (key: TeamCalendarId) => {
+export const ConfirmDeleteCalendarCard = (teamCalendarId: TeamCalendarId) => {
   const buttons = CardService.newButtonSet()
-    .addButton(ConfirmButton(key))
+    .addButton(ConfirmButton(teamCalendarId))
     .addButton(CancelButton());
 
-  const teamCalendar = TeamCalendarController.read(key);
+  const teamCalendar = TeamCalendarController.read(teamCalendarId);
   if (!teamCalendar) throw new Error("Calendar not found. Maybe it was already deleted?");
 
   const linkedCalendar = teamCalendar
