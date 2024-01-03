@@ -10,6 +10,7 @@ function CalendarNameInput(value?: string) {
   return CardService.newTextInput()
     .setFieldName(calendarFormFields.name)
     .setTitle("Calendar name")
+    .setHint("This will also update the linked Google calendar name")
     .setValue(value ?? "");
 }
 
