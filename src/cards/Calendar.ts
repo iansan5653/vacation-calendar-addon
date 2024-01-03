@@ -4,6 +4,7 @@ import { RecreateLinkedCalendarAction } from "../endpoints/onRecreateLinkedCalen
 import { StartUpdateCalendarAction } from "../endpoints/onStartUpdateCalendar";
 import { TeamCalendar } from "../models/TeamCalendar";
 import { TeamCalendarId } from "../models/TeamCalendarId";
+import { googleCalendarSettingsUrl } from "./utils/googleCalendar";
 
 function CalendarHeader(calendar: TeamCalendar) {
   return CardService.newCardHeader().setTitle(calendar.name);
@@ -26,6 +27,7 @@ function CalendarActions(teamCalendarId: TeamCalendarId) {
 function CalendarSettingsSection(calendarId: TeamCalendarId, calendar: TeamCalendar) {
   return CardService.newCardSection()
     .setHeader("Settings")
+    .addWidget(CardService.newDecoratedText().setTopLabel("Name").setText(calendar.name))
     .addWidget(
       CardService.newDecoratedText()
         .setTopLabel("Team members")
@@ -57,21 +59,25 @@ function LinkedCalendarSection(calendarId: TeamCalendarId, calendar: TeamCalenda
       );
   }
 
-  return section.addWidget(
-    CardService.newDecoratedText()
-      .setText(
-        `<b><font color="${googleCalendar.getColor()}">⬤</font> ${googleCalendar.getName()}</b>`,
-      )
-      .setBottomLabel(
-        "Use the linked calendar's settings (in the left sidebar) to update sharing, notifications, and more.",
-      ),
-  );
+  return section
+    .addWidget(
+      CardService.newDecoratedText()
+        .setText(
+          `<b><font color="${googleCalendar.getColor()}">⬤</font> ${googleCalendar.getName()}</b>`,
+        )
+        .setBottomLabel("Events will be added to this calendar."),
+    )
+    .addWidget(
+      CardService.newTextButton()
+        .setText("Sharing and settings")
+        .setOpenLink(CardService.newOpenLink().setUrl(googleCalendarSettingsUrl(googleCalendar))),
+    );
 }
 
 export function CalendarCard(id: TeamCalendarId, calendar: TeamCalendar) {
   return CardService.newCardBuilder()
     .setHeader(CalendarHeader(calendar))
-    .addSection(LinkedCalendarSection(id, calendar))
     .addSection(CalendarSettingsSection(id, calendar))
+    .addSection(LinkedCalendarSection(id, calendar))
     .build();
 }

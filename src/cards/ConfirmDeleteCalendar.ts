@@ -6,7 +6,7 @@ import {
 } from "../endpoints/onConfirmDeleteCalendar";
 import { GoBackAction } from "../endpoints/onGoBack";
 import { TeamCalendarId } from "../models/TeamCalendarId";
-import { formatGoogleCalendarName } from "./utils/formatGoogleCalendarName";
+import { formatGoogleCalendarName } from "./utils/googleCalendar";
 
 function ConfirmButton(teamCalendarId: TeamCalendarId) {
   return CardService.newTextButton()
