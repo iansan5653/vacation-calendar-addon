@@ -1,3 +1,4 @@
+import { LinkedCalendarController } from "../controllers/LinkedCalendarController";
 import { DeleteCalendarAction } from "../endpoints/onDeleteCalendar";
 import { StartUpdateCalendarAction } from "../endpoints/onStartUpdateCalendar";
 import { TeamCalendar } from "../models/TeamCalendar";
@@ -36,12 +37,10 @@ function CalendarSettingsSection(key: TeamCalendarKey, calendar: TeamCalendar) {
 function LinkedCalendarSection(calendar: TeamCalendar) {
   const section = CardService.newCardSection().setHeader("Linked Google calendar");
 
-  let googleCalendar;
-  try {
-    googleCalendar = CalendarApp.getCalendarById(calendar.googleCalendarId);
-  } catch {
+  const googleCalendar = LinkedCalendarController.read(calendar.googleCalendarId);
+  if (!googleCalendar) {
     return section.addWidget(
-      CardService.newTextParagraph().setText("Calendar not found! Maybe it was deleted?"),
+      CardService.newTextParagraph().setText("⚠️ No linked calendar found. Maybe it was deleted?"),
     );
   }
 

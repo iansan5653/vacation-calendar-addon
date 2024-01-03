@@ -1,4 +1,5 @@
 import { populateWindow } from "../config";
+import { LinkedCalendarController } from "../controllers/LinkedCalendarController";
 import { TeamCalendarController } from "../controllers/TeamCalendarController";
 import { TeamCalendarKey } from "../models/TeamCalendarKey";
 import { add, differenceInMinutes, parseISO } from "date-fns";
@@ -75,9 +76,11 @@ export function populateCalendar(
 
   if (!calendar) throw new Error("Failed to populate calendar: Team calendar not found");
 
-  const googleCalendar = CalendarApp.getCalendarById(calendar.googleCalendarId);
-  const googleCalendarId = googleCalendar?.getId();
-  if (!googleCalendar) throw new Error("Failed to populate calendar: Google calendar not found");
+  const googleCalendar = LinkedCalendarController.read(calendar.googleCalendarId);
+  if (!googleCalendar) {
+    Logger.log("Failed to populate calendar: Linked Google calendar not found");
+    return;
+  }
 
   // Wipe the calendar
   for (const eventId of calendar.managedEventIds)
@@ -92,7 +95,7 @@ export function populateCalendar(
   const newManagedEventIds = [];
   for (const teamMember of calendar.teamMembers)
     for (const sourceEvent of getOutOfOfficeEvents(teamMember, now, calendar.minEventDuration)) {
-      const id = createTeamCalendarEvent(teamMember, sourceEvent, googleCalendarId);
+      const id = createTeamCalendarEvent(teamMember, sourceEvent, calendar.googleCalendarId);
       if (id) newManagedEventIds.push(id);
     }
 
