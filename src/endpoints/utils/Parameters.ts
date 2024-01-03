@@ -1,6 +1,6 @@
 import { TeamCalendarKey } from "../../models/TeamCalendarKey";
 
-export class Parameters<T extends Record<string,string>> {
+export class Parameters<T extends Record<string, string>> {
   #data: Partial<T>;
 
   constructor(data?: Partial<T>) {
@@ -24,7 +24,9 @@ export class Parameters<T extends Record<string,string>> {
   }
 }
 
-export class CalendarKeyParameters<T extends {calendarKey: TeamCalendarKey}> extends Parameters<T> {
+export class CalendarKeyParameters<
+  T extends { calendarKey: TeamCalendarKey },
+> extends Parameters<T> {
   setCalendarKey(key: TeamCalendarKey | undefined): this {
     return this.set("calendarKey", key);
   }
@@ -32,5 +34,15 @@ export class CalendarKeyParameters<T extends {calendarKey: TeamCalendarKey}> ext
   getCalendarKey(): TeamCalendarKey | undefined {
     const key = this.get("calendarKey");
     return key && TeamCalendarKey.is(key) ? key : undefined;
+  }
+}
+
+/** Automatically provided to a handler for `Grid.setOnClickAction`. */
+export class GridItemClickParameters<
+  T extends { grid_item_identifier: string },
+> extends Parameters<T> {
+  /** Get the item identifier, set by `GridItem.setIdentifier`. */
+  getGridItemIdentifier(): string | undefined {
+    return this.get("grid_item_identifier");
   }
 }
