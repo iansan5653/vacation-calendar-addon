@@ -8,9 +8,13 @@ export const onRefreshCalendarView: Endpoint = ({ commonEventObject }) => {
   if (!calendarId) throw new Error("Calendar ID is required");
 
   return CardService.newActionResponseBuilder()
-    .setNavigation(CardService.newNavigation().updateCard(CalendarCard(calendarId)))
+    .setNavigation(RefreshCalendarViewNavigation(calendarId))
     .build();
 };
+
+export function RefreshCalendarViewNavigation(teamCalendarId: TeamCalendarId) {
+  return CardService.newNavigation().updateCard(CalendarCard(teamCalendarId));
+}
 
 export function RefreshCalendarViewAction(teamCalendarId: TeamCalendarId) {
   return CardService.newAction()

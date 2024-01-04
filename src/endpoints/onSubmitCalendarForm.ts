@@ -1,7 +1,6 @@
 import { TeamCalendarController } from "../controllers/TeamCalendarController";
 import { TeamCalendarId } from "../models/TeamCalendarId";
 import { Endpoint } from "./utils/Endpoint";
-import { GoHomeNavigation } from "./onGoHome";
 import { TeamCalendarIdParameters } from "./utils/Parameters";
 import { QueueController } from "../controllers/QueueController";
 import { onPopulateCalendars } from "./onPopulateCalendars";
@@ -65,7 +64,9 @@ export const onSubmitCalendarForm: Endpoint = ({ commonEventObject }) => {
         isUpdate ? "Calendar updated." : "Calendar created. Events will appear in a few minutes.",
       ),
     )
-    .setNavigation(GoHomeNavigation().pushCard(CalendarCard(teamCalendarId, teamCalendar)))
+    .setNavigation(
+      CardService.newNavigation().popCard().updateCard(CalendarCard(teamCalendarId, teamCalendar)),
+    )
     .build();
 };
 

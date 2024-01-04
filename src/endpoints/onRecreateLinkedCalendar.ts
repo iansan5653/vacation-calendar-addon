@@ -1,7 +1,7 @@
 import { LinkedCalendarController } from "../controllers/LinkedCalendarController";
 import { TeamCalendarController } from "../controllers/TeamCalendarController";
 import { TeamCalendarId } from "../models/TeamCalendarId";
-import { GoHomeNavigation } from "./onGoHome";
+import { RefreshCalendarViewNavigation } from "./onRefreshCalendarView";
 import { Endpoint } from "./utils/Endpoint";
 import { TeamCalendarIdParameters } from "./utils/Parameters";
 
@@ -21,8 +21,7 @@ export const onRecreateLinkedCalendar: Endpoint = ({ commonEventObject }) => {
   TeamCalendarController.update(teamCalendarId, { googleCalendarId });
 
   return CardService.newActionResponseBuilder()
-    .setNotification(CardService.newNotification().setText("Calendar deleted"))
-    .setNavigation(GoHomeNavigation())
+    .setNavigation(RefreshCalendarViewNavigation(teamCalendarId))
     .build();
 };
 
