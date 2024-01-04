@@ -24,8 +24,8 @@
   ],
   "addOns": {
     "common": {
-      "name": "Team Calendar",
-      "logoUrl": "https://quokka-340401.web.app/quokka%20logo.png",
+      "name": "Vacation Calendar",
+      "logoUrl": "https://iansan5653.github.io/team-calendar/logo.png",
       "universalActions": [
         {
           "label": "Create a new calendar",
