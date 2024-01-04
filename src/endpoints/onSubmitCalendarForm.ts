@@ -65,7 +65,9 @@ export const onSubmitCalendarForm: Endpoint = ({ commonEventObject }) => {
       ),
     )
     .setNavigation(
-      CardService.newNavigation().popCard().updateCard(CalendarCard(teamCalendarId, teamCalendar)),
+      CardService.newNavigation()
+        .popCard()
+        .updateCard(CalendarCard(teamCalendarId, teamCalendar, !isUpdate)),
     )
     .build();
 };

@@ -21,7 +21,7 @@ export const onRecreateLinkedCalendar: Endpoint = ({ commonEventObject }) => {
   TeamCalendarController.update(teamCalendarId, { googleCalendarId });
 
   return CardService.newActionResponseBuilder()
-    .setNavigation(RefreshCalendarViewNavigation(teamCalendarId))
+    .setNavigation(RefreshCalendarViewNavigation(teamCalendarId, true))
     .build();
 };
 

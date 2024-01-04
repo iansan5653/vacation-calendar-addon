@@ -7,7 +7,7 @@ import { RefreshCalendarViewAction } from "../endpoints/onRefreshCalendarView";
 import { StartUpdateCalendarAction } from "../endpoints/onStartUpdateCalendar";
 import { NameFormat, SyncStatus, TeamCalendar } from "../models/TeamCalendar";
 import { TeamCalendarId } from "../models/TeamCalendarId";
-import { googleCalendarSettingsUrl } from "./utils/googleCalendar";
+import { formatGoogleCalendarName, googleCalendarSettingsUrl } from "./utils/googleCalendar";
 import { syncStatusText } from "./utils/teamCalendar";
 
 function CalendarHeader(calendar: TeamCalendar) {
@@ -85,7 +85,7 @@ function CalendarSettingsSection(calendarId: TeamCalendarId, calendar: TeamCalen
     .addWidget(CalendarActions(calendarId));
 }
 
-function LinkedCalendarSection(calendarId: TeamCalendarId, calendar: TeamCalendar) {
+function LinkedCalendarSection(calendarId: TeamCalendarId, calendar: TeamCalendar, isNew: boolean) {
   const section = CardService.newCardSection().setHeader("Linked Google calendar");
 
   const googleCalendar = LinkedCalendarController.read(calendar.googleCalendarId);
@@ -103,28 +103,28 @@ function LinkedCalendarSection(calendarId: TeamCalendarId, calendar: TeamCalenda
       );
   }
 
-  return section
-    .addWidget(
-      CardService.newDecoratedText()
-        .setText(
-          `<b><font color="${googleCalendar.getColor()}">⬤</font> ${googleCalendar.getName()}</b>`,
-        )
-        .setBottomLabel("Events will be added to this calendar."),
-    )
-    .addWidget(
-      CardService.newTextButton()
-        .setText("Sharing and settings")
-        .setOpenLink(CardService.newOpenLink().setUrl(googleCalendarSettingsUrl(googleCalendar))),
-    );
+  const text = CardService.newDecoratedText().setText(formatGoogleCalendarName(googleCalendar));
+
+  if (isNew) text.setBottomLabel("Refresh the page to see this calendar");
+
+  return section.addWidget(text).addWidget(
+    CardService.newTextButton()
+      .setText("Sharing and settings")
+      .setOpenLink(CardService.newOpenLink().setUrl(googleCalendarSettingsUrl(googleCalendar))),
+  );
 }
 
-export function CalendarCard(id: TeamCalendarId, calendar = TeamCalendarController.read(id)) {
+export function CalendarCard(
+  id: TeamCalendarId,
+  calendar = TeamCalendarController.read(id),
+  isNewGoogleCalendar = false,
+) {
   if (!calendar) throw new Error("Calendar not found. Maybe it was deleted?");
 
   return CardService.newCardBuilder()
     .setHeader(CalendarHeader(calendar))
     .addSection(CalendarStatusSection(id, calendar.syncStatus))
     .addSection(CalendarSettingsSection(id, calendar))
-    .addSection(LinkedCalendarSection(id, calendar))
+    .addSection(LinkedCalendarSection(id, calendar, isNewGoogleCalendar))
     .build();
 }

@@ -12,8 +12,13 @@ export const onRefreshCalendarView: Endpoint = ({ commonEventObject }) => {
     .build();
 };
 
-export function RefreshCalendarViewNavigation(teamCalendarId: TeamCalendarId) {
-  return CardService.newNavigation().updateCard(CalendarCard(teamCalendarId));
+export function RefreshCalendarViewNavigation(
+  teamCalendarId: TeamCalendarId,
+  isNewGoogleCalendar = false,
+) {
+  return CardService.newNavigation().updateCard(
+    CalendarCard(teamCalendarId, undefined, isNewGoogleCalendar),
+  );
 }
 
 export function RefreshCalendarViewAction(teamCalendarId: TeamCalendarId) {
