@@ -1,8 +1,10 @@
 import { TeamCalendarsController } from "../controllers/TeamCalendarsController";
 import { OnClickCalendarGridItemAction } from "../endpoints/onClickCalendarGridItem";
+import { GoHomeAction } from "../endpoints/onGoHome";
 import { StartUpdateCalendarAction } from "../endpoints/onStartUpdateCalendar";
 import { TeamCalendar } from "../models/TeamCalendar";
 import { TeamCalendarId } from "../models/TeamCalendarId";
+import { syncStatusText } from "./utils/teamCalendar";
 
 function CreateButton() {
   return CardService.newTextButton()
@@ -16,8 +18,11 @@ function EmptyText() {
   );
 }
 
-function CalendarGridItem(id: TeamCalendarId, { name }: TeamCalendar) {
-  return CardService.newGridItem().setIdentifier(id).setTitle(name);
+function CalendarGridItem(id: TeamCalendarId, { name, syncStatus }: TeamCalendar) {
+  return CardService.newGridItem()
+    .setIdentifier(id)
+    .setTitle(name)
+    .setSubtitle(syncStatusText(syncStatus));
 }
 
 function CalendarsGrid(calendars: (readonly [TeamCalendarId, TeamCalendar])[]) {
@@ -33,6 +38,10 @@ function CalendarsGrid(calendars: (readonly [TeamCalendarId, TeamCalendar])[]) {
   return grid;
 }
 
+function RefreshButton() {
+  return CardService.newTextButton().setText("Refresh").setOnClickAction(GoHomeAction());
+}
+
 export function HomeCard() {
   const calendars = TeamCalendarsController.read();
 
@@ -44,7 +53,9 @@ export function HomeCard() {
     body = body.addWidget(CalendarsGrid(calendars));
   }
 
-  body = body.addWidget(CreateButton());
+  body = body
+    .addWidget(CardService.newTextParagraph().setText("Click 'Refresh' to update statuses."))
+    .addWidget(CardService.newButtonSet().addButton(CreateButton()).addButton(RefreshButton()));
 
   return CardService.newCardBuilder().setName(HomeCard.name).addSection(body).build();
 }

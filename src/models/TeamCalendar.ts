@@ -11,6 +11,14 @@ export const NameFormat = {
   } as const satisfies Record<NameFormat, string>,
 };
 
+type SyncState = "pending" | "success" | "error";
+
+export interface SyncStatus {
+  state: SyncState;
+  timestamp: Date;
+  message?: string;
+}
+
 export interface NewTeamCalendar {
   name: string;
   /** Email addresses */
@@ -18,6 +26,7 @@ export interface NewTeamCalendar {
   /** In hours */
   minEventDuration: number;
   nameFormat: NameFormat;
+  syncStatus: SyncStatus;
 }
 
 export interface TeamCalendar extends NewTeamCalendar {

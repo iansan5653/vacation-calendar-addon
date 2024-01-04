@@ -8,3 +8,4 @@ export { onStartUpdateCalendar } from "./endpoints/onStartUpdateCalendar";
 export { onSubmitCalendarForm } from "./endpoints/onSubmitCalendarForm";
 export { onClickCalendarGridItem } from "./endpoints/onClickCalendarGridItem";
 export { onRecreateLinkedCalendar } from "./endpoints/onRecreateLinkedCalendar";
+export { onRefreshCalendarView } from "./endpoints/onRefreshCalendarView";

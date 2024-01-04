@@ -1,7 +1,7 @@
 import { populateWindow } from "../config";
 import { LinkedCalendarController } from "../controllers/LinkedCalendarController";
 import { TeamCalendarController } from "../controllers/TeamCalendarController";
-import { NameFormat } from "../models/TeamCalendar";
+import { NameFormat, SyncStatus } from "../models/TeamCalendar";
 import { TeamCalendarId } from "../models/TeamCalendarId";
 import { add, differenceInMinutes, parseISO } from "date-fns";
 
@@ -96,43 +96,56 @@ function deleteEvent(calendarId: string, eventId: string) {
   }
 }
 
+function updateStatus(teamCalendarId: TeamCalendarId, status: Omit<SyncStatus, "timestamp">) {
+  TeamCalendarController.update(teamCalendarId, {
+    syncStatus: { ...status, timestamp: new Date() },
+  });
+}
+
 /** Completely wipe and repopulate a calendar. */
 export function populateCalendar(
   teamCalendarId: TeamCalendarId,
   calendar = TeamCalendarController.read(teamCalendarId),
 ) {
-  Logger.log(`Populating calendar ${teamCalendarId}: ${JSON.stringify(calendar)})}`);
+  if (!calendar) throw new Error("Failed to populate calendar: not found");
+
   const now = new Date();
 
-  if (!calendar) throw new Error("Failed to populate calendar: Team calendar not found");
+  Logger.log(`Populating calendar ${teamCalendarId}: ${JSON.stringify(calendar)})}`);
+  updateStatus(teamCalendarId, { state: "pending" });
 
   const googleCalendar = LinkedCalendarController.read(calendar.googleCalendarId);
   if (!googleCalendar) {
-    Logger.log("Failed to populate calendar: Linked Google calendar not found");
+    updateStatus(teamCalendarId, { state: "error", message: "Linked Google calendar not found" });
     return;
   }
 
-  Logger.log("Clearing existing events");
+  try {
+    Logger.log("Clearing existing events");
 
-  // Wipe the calendar
-  for (const eventId of calendar.managedEventIds) deleteEvent(calendar.googleCalendarId, eventId);
+    // Wipe the calendar
+    for (const eventId of calendar.managedEventIds) deleteEvent(calendar.googleCalendarId, eventId);
 
-  Logger.log("Finished clearing events");
+    Logger.log("Finished clearing events");
 
-  // Repopulate the calendar
-  const newManagedEventIds = [];
-  for (const teamMemberEmail of calendar.teamMembers) {
-    const name = getTeamMemberName(teamMemberEmail, calendar.nameFormat);
+    // Repopulate the calendar
+    const newManagedEventIds = [];
+    for (const teamMemberEmail of calendar.teamMembers) {
+      const name = getTeamMemberName(teamMemberEmail, calendar.nameFormat);
 
-    for (const sourceEvent of getOutOfOfficeEvents(
-      teamMemberEmail,
-      now,
-      calendar.minEventDuration,
-    )) {
-      const id = createTeamCalendarEvent(name, sourceEvent, calendar.googleCalendarId);
-      if (id) newManagedEventIds.push(id);
+      for (const sourceEvent of getOutOfOfficeEvents(
+        teamMemberEmail,
+        now,
+        calendar.minEventDuration,
+      )) {
+        const id = createTeamCalendarEvent(name, sourceEvent, calendar.googleCalendarId);
+        if (id) newManagedEventIds.push(id);
+      }
     }
-  }
 
-  TeamCalendarController.update(teamCalendarId, { managedEventIds: newManagedEventIds });
+    TeamCalendarController.update(teamCalendarId, { managedEventIds: newManagedEventIds });
+    updateStatus(teamCalendarId, { state: "success" });
+  } catch {
+    updateStatus(teamCalendarId, { state: "error", message: "Unknown error" });
+  }
 }

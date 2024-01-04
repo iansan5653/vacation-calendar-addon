@@ -3,7 +3,7 @@ import { TeamCalendarId } from "../models/TeamCalendarId";
 import { LinkedCalendarController } from "./LinkedCalendarController";
 
 export const TeamCalendarController = {
-  create({ name, teamMembers, minEventDuration, nameFormat }: NewTeamCalendar) {
+  create({ name, teamMembers, minEventDuration, nameFormat, syncStatus }: NewTeamCalendar) {
     const googleCalendarId = LinkedCalendarController.create(name);
 
     const calendar: TeamCalendar = {
@@ -13,6 +13,7 @@ export const TeamCalendarController = {
       managedEventIds: [],
       minEventDuration,
       nameFormat,
+      syncStatus,
     };
 
     const id = TeamCalendarId.new();
@@ -28,7 +29,9 @@ export const TeamCalendarController = {
     const json = PropertiesService.getUserProperties().getProperty(id);
     if (!json) return undefined;
 
-    return JSON.parse(json) as TeamCalendar;
+    return JSON.parse(json, (key, value) =>
+      key === "timestamp" ? new Date(value) : value,
+    ) as TeamCalendar;
   },
 
   update(id: TeamCalendarId, data: Partial<TeamCalendar>) {

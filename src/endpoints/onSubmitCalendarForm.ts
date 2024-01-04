@@ -8,6 +8,8 @@ import { onPopulateCalendars } from "./onPopulateCalendars";
 import { CalendarCard } from "../cards/Calendar";
 import { NameFormat } from "../models/TeamCalendar";
 
+// TODO: move logic to job
+
 export const onSubmitCalendarForm: Endpoint = ({ commonEventObject }) => {
   let teamCalendarId = new TeamCalendarIdParameters(commonEventObject.parameters).getId();
   const isUpdate = !!teamCalendarId;
@@ -46,6 +48,10 @@ export const onSubmitCalendarForm: Endpoint = ({ commonEventObject }) => {
       teamMembers,
       minEventDuration,
       nameFormat,
+      syncStatus: {
+        state: "pending",
+        timestamp: new Date(),
+      },
     });
     teamCalendar = result.calendar;
     teamCalendarId = result.id;
