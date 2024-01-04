@@ -1,11 +1,10 @@
+import { CalendarCard } from "../cards/Calendar";
 import { TeamCalendarController } from "../controllers/TeamCalendarController";
+import { NameFormat } from "../models/TeamCalendar";
 import { TeamCalendarId } from "../models/TeamCalendarId";
+import { queuePopulateCalendars } from "./onPopulateCalendars";
 import { Endpoint } from "./utils/Endpoint";
 import { TeamCalendarIdParameters } from "./utils/Parameters";
-import { QueueController } from "../controllers/QueueController";
-import { onPopulateCalendars } from "./onPopulateCalendars";
-import { CalendarCard } from "../cards/Calendar";
-import { NameFormat } from "../models/TeamCalendar";
 
 // TODO: move logic to job
 
@@ -56,7 +55,7 @@ export const onSubmitCalendarForm: Endpoint = ({ commonEventObject }) => {
     teamCalendarId = result.id;
   }
 
-  QueueController.queueOnce(onPopulateCalendars.name, { seconds: 1 });
+  queuePopulateCalendars({ seconds: 1 });
 
   return CardService.newActionResponseBuilder()
     .setNotification(

@@ -1,6 +1,7 @@
 import { LinkedCalendarController } from "../controllers/LinkedCalendarController";
 import { TeamCalendarController } from "../controllers/TeamCalendarController";
 import { TeamCalendarId } from "../models/TeamCalendarId";
+import { queuePopulateCalendars } from "./onPopulateCalendars";
 import { RefreshCalendarViewNavigation } from "./onRefreshCalendarView";
 import { Endpoint } from "./utils/Endpoint";
 import { TeamCalendarIdParameters } from "./utils/Parameters";
@@ -19,6 +20,8 @@ export const onRecreateLinkedCalendar: Endpoint = ({ commonEventObject }) => {
 
   const googleCalendarId = LinkedCalendarController.create(teamCalendar.name);
   TeamCalendarController.update(teamCalendarId, { googleCalendarId });
+
+  queuePopulateCalendars({ seconds: 1 });
 
   return CardService.newActionResponseBuilder()
     .setNavigation(RefreshCalendarViewNavigation(teamCalendarId, true))

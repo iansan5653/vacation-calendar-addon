@@ -1,3 +1,4 @@
+import { Duration } from "date-fns";
 import { populateFrequency } from "../config";
 import { QueueController } from "../controllers/QueueController";
 import { TeamCalendarsController } from "../controllers/TeamCalendarsController";
@@ -9,9 +10,13 @@ export const onPopulateCalendars: Endpoint = () => {
   for (const [id, calendar] of calendars) populateCalendar(id, calendar);
 
   // Automatically repopulate later
-  if (calendars.length) QueueController.queueOnce(onPopulateCalendars.name, populateFrequency);
+  if (calendars.length) queuePopulateCalendars(populateFrequency);
 };
 
 export const PopulateCalendarsAction = () => {
   return CardService.newAction().setFunctionName(onPopulateCalendars.name);
+};
+
+export const queuePopulateCalendars = (after: Duration) => {
+  QueueController.queueOnce(onPopulateCalendars.name, after);
 };
