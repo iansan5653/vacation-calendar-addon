@@ -2,7 +2,11 @@ import type { GoogleCalendarId } from "../models/GoogleCalendarId";
 
 export const LinkedCalendarController = {
   create(name: string) {
-    return CalendarApp.createCalendar(name).getId() as GoogleCalendarId;
+    return CalendarApp.createCalendar(name, {
+      hidden: false,
+      summary: "Automatically updated team calendar.",
+      selected: true,
+    }).getId() as GoogleCalendarId;
   },
   read(id: GoogleCalendarId) {
     try {
