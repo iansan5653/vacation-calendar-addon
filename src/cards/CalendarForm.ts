@@ -6,12 +6,15 @@ import {
 import { NameFormat, TeamCalendar } from "../models/TeamCalendar";
 import { TeamCalendarId } from "../models/TeamCalendarId";
 
-function CalendarNameInput(value?: string) {
-  return CardService.newTextInput()
+function CalendarNameInput(editing: boolean, value?: string) {
+  const input = CardService.newTextInput()
     .setFieldName(calendarFormFields.name)
     .setTitle("Calendar name")
-    .setHint("This will also update the linked Google calendar name")
     .setValue(value ?? "");
+
+  if (editing) input.setHint("Will also update the linked Google calendar name");
+
+  return input;
 }
 
 function TeamMembersInput(value?: string[]) {
@@ -54,7 +57,8 @@ function CancelButton() {
 }
 
 export function CalendarFormCard(calendar?: { id: TeamCalendarId; calendar: TeamCalendar }) {
-  const title = calendar?.calendar ? `Edit "${calendar.calendar.name}"` : "New calendar";
+  const editing = !!calendar;
+  const title = editing ? `Edit "${calendar.calendar.name}"` : "New calendar";
 
   const buttons = CardService.newButtonSet()
     .addButton(SubmitButton(calendar?.id))
@@ -65,7 +69,7 @@ export function CalendarFormCard(calendar?: { id: TeamCalendarId; calendar: Team
     .setHeader(CardService.newCardHeader().setTitle(title))
     .addSection(
       CardService.newCardSection()
-        .addWidget(CalendarNameInput(calendar?.calendar.name))
+        .addWidget(CalendarNameInput(editing, calendar?.calendar.name))
         .addWidget(TeamMembersInput(calendar?.calendar.teamMembers))
         .addWidget(MinDurationInput(calendar?.calendar.minEventDuration?.toString(10)))
         .addWidget(NameFormatSelector(calendar?.calendar.nameFormat))
