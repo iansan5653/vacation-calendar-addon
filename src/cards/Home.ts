@@ -26,15 +26,15 @@ function CalendarGridItem(id: TeamCalendarId, { name, syncStatus }: TeamCalendar
 }
 
 function CalendarsGrid(calendars: (readonly [TeamCalendarId, TeamCalendar])[]) {
-  let grid = CardService.newGrid()
+  const grid = CardService.newGrid()
     .setTitle("Your team calendars")
     .setBorderStyle(
       CardService.newBorderStyle().setType(CardService.BorderType.STROKE).setCornerRadius(8),
     )
     .setOnClickAction(OnClickCalendarGridItemAction());
-  for (const [id, calendar] of calendars) {
-    grid = grid.addItem(CalendarGridItem(id, calendar));
-  }
+
+  for (const [id, calendar] of calendars) grid.addItem(CalendarGridItem(id, calendar));
+
   return grid;
 }
 
@@ -45,15 +45,15 @@ function RefreshButton() {
 export function HomeCard() {
   const calendars = TeamCalendarsController.read();
 
-  let body = CardService.newCardSection();
+  const body = CardService.newCardSection();
 
   if (calendars.length === 0) {
-    body = body.addWidget(EmptyText());
+    body.addWidget(EmptyText());
   } else {
-    body = body.addWidget(CalendarsGrid(calendars));
+    body.addWidget(CalendarsGrid(calendars));
   }
 
-  body = body
+  body
     .addWidget(CardService.newTextParagraph().setText("Click 'Refresh' to update statuses."))
     .addWidget(CardService.newButtonSet().addButton(CreateButton()).addButton(RefreshButton()));
 

@@ -31,7 +31,11 @@
           "label": "Create a new calendar",
           "runFunction": "onStartUpdateCalendar"
         }
-      ]
+      ],
+      "layoutProperties": {
+        "primaryColor": "#dcecf6",
+        "secondaryColor": "#00748d"
+      }
     },
     "calendar": {
       "homepageTrigger": {
