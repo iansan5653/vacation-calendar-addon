@@ -7,7 +7,13 @@ import { Endpoint } from "./utils/Endpoint";
 
 export const onPopulateCalendars: Endpoint = () => {
   const calendars = TeamCalendarsController.read();
-  for (const [id, calendar] of calendars) populateCalendar(id, calendar);
+  
+  for (const [id, calendar] of calendars)
+    try {
+      populateCalendar(id, calendar);
+    } catch (error) {
+      Logger.log({ id, error });
+    }
 
   // Automatically repopulate later
   if (calendars.length) queuePopulateCalendars(populateFrequency);

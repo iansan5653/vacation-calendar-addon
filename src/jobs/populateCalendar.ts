@@ -1,9 +1,9 @@
-import { populateWindow } from "../config";
+import { backPopulateWindow } from "../config";
 import { LinkedCalendarController } from "../controllers/LinkedCalendarController";
 import { TeamCalendarController } from "../controllers/TeamCalendarController";
 import { NameFormat, SyncStatus } from "../models/TeamCalendar";
 import { TeamCalendarId } from "../models/TeamCalendarId";
-import { add, differenceInMinutes, parseISO } from "date-fns";
+import { differenceInMinutes, parseISO, sub } from "date-fns";
 
 type CalendarApiEvent = GoogleAppsScript.Calendar.Schema.Event;
 
@@ -35,8 +35,7 @@ function getOutOfOfficeEvents(calendarId: string, now: Date, minDurationHours: n
   const all =
     Calendar.Events!.list(calendarId, {
       eventTypes: ["outOfOffice"],
-      timeMin: now.toISOString(),
-      timeMax: add(now, populateWindow).toISOString(),
+      timeMin: sub(now, backPopulateWindow).toISOString(),
       singleEvents: false,
     }).items ?? [];
 
