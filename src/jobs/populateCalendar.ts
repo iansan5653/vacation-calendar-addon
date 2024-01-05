@@ -32,12 +32,22 @@ const durationInHours = ({ start, end }: CalendarApiEvent) => {
 function getOutOfOfficeEvents(calendarId: string, now: Date, minDurationHours: number) {
   // here we must fall back to the Calendar API because CalendarApp does not
   // support querying for OOO events
-  const all =
-    Calendar.Events!.list(calendarId, {
+
+  const all: CalendarApiEvent[] = [];
+  let pageToken = undefined;
+  do {
+    // very strange that a type can't be inferred here
+    const response: GoogleAppsScript.Calendar.Schema.Events = Calendar.Events!.list(calendarId, {
       eventTypes: ["outOfOffice"],
       timeMin: sub(now, backPopulateWindow).toISOString(),
       singleEvents: false,
-    }).items ?? [];
+      pageToken,
+    });
+
+    if (response.items) all.push(...response.items);
+
+    pageToken = response.nextPageToken;
+  } while (pageToken !== undefined);
 
   const filtered = all.filter((event) => durationInHours(event) >= minDurationHours);
 
