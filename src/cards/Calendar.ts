@@ -47,9 +47,7 @@ function CalendarStatusSection(calendarId: TeamCalendarId, status: SyncStatus) {
     case "success":
       text.setBottomLabel("Calendars automatically sync once per week.");
       buttons.addButton(
-        CardService.newTextButton()
-          .setText("Sync now")
-          .setOnClickAction(RecreateLinkedCalendarAction(calendarId)),
+        CardService.newTextButton().setText("Sync now").setOnClickAction(PopulateCalendarsAction()),
       );
       break;
   }
