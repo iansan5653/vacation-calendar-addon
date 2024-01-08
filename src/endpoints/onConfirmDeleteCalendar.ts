@@ -14,7 +14,7 @@ export const onConfirmDeleteCalendar: Endpoint = ({ commonEventObject }) => {
   if (!teamCalendarId) throw new Error("Missing parameter: Cannot delete calendar without ID");
 
   const deleteLinkedCalendar =
-    (commonEventObject.formInputs[deleteCalendarFormFields.deleteLinkedCalendar]?.stringInputs
+    (commonEventObject.formInputs?.[deleteCalendarFormFields.deleteLinkedCalendar]?.stringInputs
       ?.value.length ?? 0) > 0;
 
   if (deleteLinkedCalendar) {

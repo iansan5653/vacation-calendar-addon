@@ -1,7 +1,7 @@
 import { LinkedCalendarController } from "../controllers/LinkedCalendarController";
 import { TeamCalendarController } from "../controllers/TeamCalendarController";
 import { DeleteCalendarAction } from "../endpoints/onDeleteCalendar";
-import { PopulateCalendarsAction } from "../endpoints/onPopulateCalendars";
+import { FullSyncCalendarsAction } from "../endpoints/onFullSyncCalendars";
 import { RecreateLinkedCalendarAction } from "../endpoints/onRecreateLinkedCalendar";
 import { RefreshCalendarViewAction } from "../endpoints/onRefreshCalendarView";
 import { StartUpdateCalendarAction } from "../endpoints/onStartUpdateCalendar";
@@ -36,7 +36,7 @@ function CalendarStatusSection(calendarId: TeamCalendarId, status: SyncStatus) {
   switch (status.state) {
     case "error":
       buttons.addButton(
-        CardService.newTextButton().setText("Retry").setOnClickAction(PopulateCalendarsAction()),
+        CardService.newTextButton().setText("Retry").setOnClickAction(FullSyncCalendarsAction()),
       );
       break;
 
@@ -47,7 +47,7 @@ function CalendarStatusSection(calendarId: TeamCalendarId, status: SyncStatus) {
     case "success":
       text.setBottomLabel("Calendars automatically sync once per week.");
       buttons.addButton(
-        CardService.newTextButton().setText("Sync now").setOnClickAction(PopulateCalendarsAction()),
+        CardService.newTextButton().setText("Sync now").setOnClickAction(FullSyncCalendarsAction()),
       );
       break;
   }
@@ -68,7 +68,11 @@ function CalendarSettingsSection(calendarId: TeamCalendarId, calendar: TeamCalen
     .addWidget(
       CardService.newDecoratedText()
         .setTopLabel("Team members")
-        .setText(calendar.teamMembers.map((e) => ` - ${e}`).join("\n")),
+        .setText(
+          Object.keys(calendar.teamMembers)
+            .map((e) => ` - ${e}`)
+            .join("\n"),
+        ),
     )
     .addWidget(
       CardService.newDecoratedText()

@@ -1,14 +1,10 @@
 import { LinkedCalendarController } from "../controllers/LinkedCalendarController";
 import { TeamCalendarController } from "../controllers/TeamCalendarController";
 import { TeamCalendarId } from "../models/TeamCalendarId";
-import { queuePopulateCalendars } from "./onPopulateCalendars";
+import { queueFullSyncCalendars } from "./onFullSyncCalendars";
 import { RefreshCalendarViewNavigation } from "./onRefreshCalendarView";
 import { Endpoint } from "./utils/Endpoint";
 import { TeamCalendarIdParameters } from "./utils/Parameters";
-
-export const deleteCalendarFormFields = {
-  deleteLinkedCalendar: "deleteLinkedCalendar",
-};
 
 export const onRecreateLinkedCalendar: Endpoint = ({ commonEventObject }) => {
   const teamCalendarId = new TeamCalendarIdParameters(commonEventObject.parameters).getId();
@@ -19,9 +15,16 @@ export const onRecreateLinkedCalendar: Endpoint = ({ commonEventObject }) => {
   if (!teamCalendar) throw new Error("Team calendar not found");
 
   const googleCalendarId = LinkedCalendarController.create(teamCalendar.name);
-  TeamCalendarController.update(teamCalendarId, { googleCalendarId });
+  // clear existing sync states
+  const unsyncedTeamMembers = Object.fromEntries(
+    Object.keys(teamCalendar.teamMembers).map((email) => [email, { eventIds: {} }] as const),
+  );
+  TeamCalendarController.update(teamCalendarId, {
+    googleCalendarId,
+    teamMembers: unsyncedTeamMembers,
+  });
 
-  queuePopulateCalendars({ seconds: 1 });
+  queueFullSyncCalendars({ seconds: 1 });
 
   return CardService.newActionResponseBuilder()
     .setNavigation(RefreshCalendarViewNavigation(teamCalendarId, true))

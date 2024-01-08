@@ -10,7 +10,6 @@ export const TeamCalendarController = {
       name,
       teamMembers,
       googleCalendarId,
-      managedEventIds: [],
       minEventDuration,
       nameFormat,
       syncStatus,

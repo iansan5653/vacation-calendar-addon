@@ -19,10 +19,19 @@ export interface SyncStatus {
   message?: string;
 }
 
+export interface TeamMemberSyncState {
+  syncToken?: string;
+  /** Map of original event ID to team-calendar event ID. */
+  eventIds: Record<string, string>;
+}
+export const TeamMemberSyncState = {
+  empty: (): TeamMemberSyncState => ({ eventIds: {} }),
+}
+
 export interface NewTeamCalendar {
   name: string;
-  /** Email addresses */
-  teamMembers: string[];
+  /** Keyed by email addresses (calendar IDs). */
+  teamMembers: Record<string, TeamMemberSyncState>;
   /** In hours */
   minEventDuration: number;
   nameFormat: NameFormat;
@@ -31,5 +40,4 @@ export interface NewTeamCalendar {
 
 export interface TeamCalendar extends NewTeamCalendar {
   googleCalendarId: GoogleCalendarId;
-  managedEventIds: string[];
 }

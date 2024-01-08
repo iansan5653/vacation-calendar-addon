@@ -70,7 +70,7 @@ export function CalendarFormCard(calendar?: { id: TeamCalendarId; calendar: Team
     .addSection(
       CardService.newCardSection()
         .addWidget(CalendarNameInput(editing, calendar?.calendar.name))
-        .addWidget(TeamMembersInput(calendar?.calendar.teamMembers))
+        .addWidget(TeamMembersInput(calendar && Object.keys(calendar.calendar.teamMembers)))
         .addWidget(MinDurationInput(calendar?.calendar.minEventDuration?.toString(10)))
         .addWidget(NameFormatSelector(calendar?.calendar.nameFormat))
         .addWidget(buttons),
