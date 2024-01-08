@@ -40,11 +40,15 @@ function createEvent(
   sourceEvent: CalendarApiEvent,
   targetCalendarId: string,
 ) {
-  // using the calendar API here avoids parsing the source event dates and introducing time zone logic
-  return Calendar.Events!.insert(
-    buildEventObject(teamMemberDisplayName, sourceEvent),
-    targetCalendarId,
-  ).id;
+  try {
+    // using the calendar API here avoids parsing the source event dates and introducing time zone logic
+    return Calendar.Events!.insert(
+      buildEventObject(teamMemberDisplayName, sourceEvent),
+      targetCalendarId,
+    ).id;
+  } catch (e) {
+    Logger.log(`ERROR: failed to create event for ${teamMemberDisplayName}: ${e}`);
+  }
 }
 
 function updateEvent(
@@ -53,11 +57,15 @@ function updateEvent(
   targetCalendarId: string,
   targetEventId: string,
 ) {
-  Calendar.Events!.update(
-    buildEventObject(teamMemberDisplayName, sourceEvent),
-    targetCalendarId,
-    targetEventId,
-  );
+  try {
+    Calendar.Events!.update(
+      buildEventObject(teamMemberDisplayName, sourceEvent),
+      targetCalendarId,
+      targetEventId,
+    );
+  } catch (e) {
+    Logger.log(`ERROR: failed to update event for ${teamMemberDisplayName}: ${e}`);
+  }
 }
 
 function deleteEvent(calendarId: string, eventId: string) {
@@ -65,7 +73,7 @@ function deleteEvent(calendarId: string, eventId: string) {
     Calendar.Events!.remove(calendarId, eventId, { sendUpdates: "none" });
   } catch (e) {
     // Probably no big deal - user probably deleted it already
-    Logger.log(`Failed to delete event ${eventId}: ${e}`);
+    Logger.log(`WARNING: Failed to delete event ${eventId}: ${e}`);
   }
 }
 
@@ -171,6 +179,7 @@ export function syncCalendarForTeamMember(
   }
 
   const displayName = getDisplayName(teamMember, calendar.nameFormat);
+  Logger.log(`Display name for ${teamMember} is ${displayName}`);
 
   const newSyncState = { ...TeamMemberSyncState.empty(), syncToken: nextSyncToken };
 
