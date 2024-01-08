@@ -40,6 +40,7 @@ export function fullSyncCalendar(
       const newSyncState = syncCalendarForTeamMember(calendar, teamMemberEmail);
       newSyncStates[teamMemberEmail] = newSyncState;
     } catch (e) {
+      newSyncStates[teamMemberEmail] = TeamMemberSyncState.empty();
       Logger.log(`Failed to sync ${teamMemberEmail}: ${e}`);
       error = `Failed to sync ${teamMemberEmail}: ${e}`;
     }
