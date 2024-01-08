@@ -48,14 +48,13 @@ export function HomeCard() {
   const body = CardService.newCardSection();
 
   if (calendars.length === 0) {
-    body.addWidget(EmptyText());
+    body.addWidget(EmptyText()).addWidget(CreateButton());
   } else {
-    body.addWidget(CalendarsGrid(calendars));
+    body
+      .addWidget(CalendarsGrid(calendars))
+      .addWidget(CardService.newTextParagraph().setText("Click 'Refresh' to update statuses."))
+      .addWidget(CardService.newButtonSet().addButton(CreateButton()).addButton(RefreshButton()));
   }
-
-  body
-    .addWidget(CardService.newTextParagraph().setText("Click 'Refresh' to update statuses."))
-    .addWidget(CardService.newButtonSet().addButton(CreateButton()).addButton(RefreshButton()));
 
   return CardService.newCardBuilder().setName(HomeCard.name).addSection(body).build();
 }
