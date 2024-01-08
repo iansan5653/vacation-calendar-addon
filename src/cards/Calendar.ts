@@ -1,7 +1,7 @@
+import { differenceInMinutes } from "date-fns";
 import { LinkedCalendarController } from "../controllers/LinkedCalendarController";
 import { TeamCalendarController } from "../controllers/TeamCalendarController";
 import { DeleteCalendarAction } from "../endpoints/onDeleteCalendar";
-import { FullSyncCalendarsAction } from "../endpoints/onFullSyncCalendars";
 import { RecreateLinkedCalendarAction } from "../endpoints/onRecreateLinkedCalendar";
 import { RefreshCalendarViewAction } from "../endpoints/onRefreshCalendarView";
 import { StartUpdateCalendarAction } from "../endpoints/onStartUpdateCalendar";
@@ -9,6 +9,7 @@ import { NameFormat, SyncStatus, TeamCalendar } from "../models/TeamCalendar";
 import { TeamCalendarId } from "../models/TeamCalendarId";
 import { formatGoogleCalendarName, googleCalendarSettingsUrl } from "./utils/googleCalendar";
 import { syncStatusText } from "./utils/teamCalendar";
+import { QueueFullSyncCalendarsAction } from "../endpoints/onQueueFullSyncCalendars";
 
 function CalendarHeader(calendar: TeamCalendar) {
   return CardService.newCardHeader().setTitle(calendar.name);
@@ -33,10 +34,15 @@ function CalendarStatusSection(calendarId: TeamCalendarId, status: SyncStatus) {
   const text = CardService.newDecoratedText().setText(syncStatusText(status));
   const buttons = CardService.newButtonSet();
 
+  if (status.state === "pending" && differenceInMinutes(status.timestamp, new Date()))
+    status = { state: "error", message: "Exceeded time limit", timestamp: status.timestamp };
+
   switch (status.state) {
     case "error":
       buttons.addButton(
-        CardService.newTextButton().setText("Retry").setOnClickAction(FullSyncCalendarsAction()),
+        CardService.newTextButton()
+          .setText("Retry")
+          .setOnClickAction(QueueFullSyncCalendarsAction()),
       );
       break;
 
@@ -47,7 +53,9 @@ function CalendarStatusSection(calendarId: TeamCalendarId, status: SyncStatus) {
     case "success":
       text.setBottomLabel("Calendars automatically sync once per week.");
       buttons.addButton(
-        CardService.newTextButton().setText("Sync now").setOnClickAction(FullSyncCalendarsAction()),
+        CardService.newTextButton()
+          .setText("Sync now")
+          .setOnClickAction(QueueFullSyncCalendarsAction()),
       );
       break;
   }
@@ -126,7 +134,7 @@ export function CalendarCard(
   return CardService.newCardBuilder()
     .setHeader(CalendarHeader(calendar))
     .addSection(CalendarStatusSection(id, calendar.syncStatus))
-    .addSection(CalendarSettingsSection(id, calendar))
     .addSection(LinkedCalendarSection(id, calendar, isNewGoogleCalendar))
+    .addSection(CalendarSettingsSection(id, calendar))
     .build();
 }

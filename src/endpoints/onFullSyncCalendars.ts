@@ -19,9 +19,8 @@ export const onFullSyncCalendars: Endpoint = () => {
   if (calendars.length) queueFullSyncCalendars(fullSyncFrequency);
 };
 
-export const FullSyncCalendarsAction = () => {
-  return CardService.newAction().setFunctionName(onFullSyncCalendars.name);
-};
+// use QueueFullSyncCalendarsAction instead, for async
+// export const FullSyncCalendarsAction
 
 export const queueFullSyncCalendars = (after: Duration) => {
   QueueController.queueOnce(onFullSyncCalendars.name, after);
