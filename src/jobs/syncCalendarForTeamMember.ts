@@ -132,35 +132,49 @@ export function syncCalendarForTeamMember(
   calendar: TeamCalendar,
   teamMember: string,
 ): TeamMemberSyncState {
+  Logger.log(`Syncing ${calendar.name} for ${teamMember}`);
+
   const syncState = calendar.teamMembers[teamMember] ?? TeamMemberSyncState.empty();
 
   let queryResult;
   try {
-    queryResult = getOutOfOfficeEvents(
-      teamMember,
-      calendar.minEventDuration,
-      syncState.syncToken,
+    Logger.log(
+      syncState.syncToken
+        ? `Attempting to query incremental sync with token ${syncState.syncToken}`
+        : "Querying events for full sync",
     );
+    queryResult = getOutOfOfficeEvents(teamMember, calendar.minEventDuration, syncState.syncToken);
   } catch (e) {
-    Logger.log(`Failed to incrementally sync, retrying as full sync: ${e}`);
-    // sometimes syncing can fail with a 401 error, requiring a full sync
-    queryResult = getOutOfOfficeEvents(
-      calendar.googleCalendarId,
-      calendar.minEventDuration,
-      undefined,
-    );
-    syncState.syncToken = undefined;
+    if (syncState.syncToken) {
+      Logger.log(`Failed to incrementally sync, retrying query as full sync: ${e}`);
+      // sometimes syncing can fail with a 401 error, requiring a full sync
+      queryResult = getOutOfOfficeEvents(
+        calendar.googleCalendarId,
+        calendar.minEventDuration,
+        undefined,
+      );
+      syncState.syncToken = undefined;
+    } else {
+      // this wasn't an incremental sync so no point in retrying
+      throw e;
+    }
   }
   const { filteredEvents: sourceEvents, nextSyncToken } = queryResult;
 
   // if full sync, clear all existing events
-  if (!syncState.syncToken)
+  if (!syncState.syncToken) {
+    Logger.log(
+      `Deleting ${Object.keys(syncState.eventIds).length} existing events to prepare for full sync`,
+    );
     for (const eventId of Object.values(syncState.eventIds))
       deleteEvent(calendar.googleCalendarId, eventId);
+  }
 
   const displayName = getDisplayName(teamMember, calendar.nameFormat);
 
   const newSyncState = { ...TeamMemberSyncState.empty(), syncToken: nextSyncToken };
+
+  const counts = { deleted: 0, modified: 0, created: 0 };
 
   for (const sourceEvent of sourceEvents) {
     if (!sourceEvent.id) continue; // shouldn't happen; the types are overly broad here
@@ -168,18 +182,22 @@ export function syncCalendarForTeamMember(
     const teamCalendarEventId = syncState.eventIds[sourceEvent.id];
 
     if (sourceEvent.status === "cancelled" && teamCalendarEventId) {
-      // deleted
+      counts.deleted++;
       deleteEvent(calendar.googleCalendarId, teamCalendarEventId);
     } else if (teamCalendarEventId) {
-      // modified
+      counts.modified++;
       updateEvent(displayName, sourceEvent, calendar.googleCalendarId, teamCalendarEventId);
       newSyncState.eventIds[sourceEvent.id] = teamCalendarEventId;
     } else if (sourceEvent.status !== "cancelled") {
-      // created
+      counts.created++;
       const newEventId = createEvent(displayName, sourceEvent, calendar.googleCalendarId);
       if (newEventId) newSyncState.eventIds[sourceEvent.id] = newEventId;
     }
   }
+
+  Logger.log(`New sync state: ${JSON.stringify(newSyncState)}`);
+
+  Logger.log(`Finished syncing for ${teamMember}: ${JSON.stringify(counts)}`);
 
   return newSyncState;
 }

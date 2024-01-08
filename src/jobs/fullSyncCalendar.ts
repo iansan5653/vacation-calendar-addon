@@ -18,7 +18,8 @@ export function fullSyncCalendar(
 ) {
   if (!calendar) throw new Error("Failed to sync calendar: not found");
 
-  Logger.log(`Fully wiping and repopulating ${teamCalendarId}: ${JSON.stringify(calendar)})}`);
+  Logger.log(`Fully wiping and repopulating ${calendar.name} (${teamCalendarId})`);
+  Logger.log(calendar);
 
   updateStatus(teamCalendarId, { state: "pending" });
 
@@ -30,6 +31,8 @@ export function fullSyncCalendar(
 
   calendar = clearCalendar(teamCalendarId, calendar);
 
+  Logger.log("Calendar cleared. Populating with each team member");
+
   const newSyncStates: Record<string, TeamMemberSyncState> = {};
   let error = undefined;
   for (const teamMemberEmail of Object.keys(calendar.teamMembers)) {
@@ -40,6 +43,8 @@ export function fullSyncCalendar(
       error = `Failed to sync ${teamMemberEmail}: ${e}`;
     }
   }
+
+  Logger.log("Populated all team members");
 
   TeamCalendarController.update(teamCalendarId, {
     teamMembers: newSyncStates,
