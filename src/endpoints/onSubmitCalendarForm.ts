@@ -2,7 +2,7 @@ import { CalendarCard } from "../cards/Calendar";
 import { TeamCalendarController } from "../controllers/TeamCalendarController";
 import { NameFormat } from "../models/TeamCalendar";
 import { TeamCalendarId } from "../models/TeamCalendarId";
-import { queuePopulateCalendars } from "./onPopulateCalendars";
+import { queueFullSyncCalendars } from "./onFullSyncCalendars";
 import { Endpoint } from "./utils/Endpoint";
 import { TeamCalendarIdParameters } from "./utils/Parameters";
 
@@ -12,16 +12,18 @@ export const onSubmitCalendarForm: Endpoint = ({ commonEventObject }) => {
   let teamCalendarId = new TeamCalendarIdParameters(commonEventObject.parameters).getId();
   const isUpdate = !!teamCalendarId;
 
-  const name = commonEventObject.formInputs[calendarFormFields.name]?.stringInputs?.value[0] ?? "";
+  const name = commonEventObject.formInputs?.[calendarFormFields.name]?.stringInputs?.value[0] ?? "";
   if (!name) throw new Error("Calendar name is required.");
 
-  const teamMembers =
-    commonEventObject.formInputs[calendarFormFields.teamMembers]?.stringInputs?.value[0]?.split(
-      "\n",
-    ) ?? [];
+  // TODO: preserve existing sync states for unchanged team members
+  const teamMembers = Object.fromEntries(
+    commonEventObject.formInputs?.[calendarFormFields.teamMembers]?.stringInputs?.value[0]
+      ?.split("\n")
+      ?.map((email) => [email, { eventIds: {} }] as const) ?? [],
+  );
 
   const minEventDurationStr =
-    commonEventObject.formInputs[calendarFormFields.minEventDuration]?.stringInputs?.value[0] ??
+    commonEventObject.formInputs?.[calendarFormFields.minEventDuration]?.stringInputs?.value[0] ??
     "4";
   const minEventDuration = parseInt(minEventDurationStr, 10);
   if (Number.isNaN(minEventDuration))
@@ -30,7 +32,7 @@ export const onSubmitCalendarForm: Endpoint = ({ commonEventObject }) => {
     );
 
   const nameFormatStr =
-    commonEventObject.formInputs[calendarFormFields.nameFormat]?.stringInputs?.value[0];
+    commonEventObject.formInputs?.[calendarFormFields.nameFormat]?.stringInputs?.value[0];
   const nameFormat = nameFormatStr && NameFormat.is(nameFormatStr) ? nameFormatStr : "name";
 
   let teamCalendar;
@@ -55,7 +57,7 @@ export const onSubmitCalendarForm: Endpoint = ({ commonEventObject }) => {
     teamCalendarId = result.id;
   }
 
-  queuePopulateCalendars({ seconds: 1 });
+  queueFullSyncCalendars({ seconds: 1 });
 
   return CardService.newActionResponseBuilder()
     .setNotification(
