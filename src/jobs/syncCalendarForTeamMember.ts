@@ -137,7 +137,7 @@ export function syncCalendarForTeamMember(
   let queryResult;
   try {
     queryResult = getOutOfOfficeEvents(
-      calendar.googleCalendarId,
+      teamMember,
       calendar.minEventDuration,
       syncState.syncToken,
     );
