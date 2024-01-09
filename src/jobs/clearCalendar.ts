@@ -10,17 +10,28 @@ export function clearCalendar(
 
   if (!calendar) throw new Error("Failed to clear calendar: not found");
 
-  const oldEvents = Calendar.Events?.list(calendar.googleCalendarId)?.items ?? [];
-  Logger.log(`Found ${oldEvents.length} events to delete`);
-
+  let pageNumber = 0;
   let deleted = 0;
-  for (const event of oldEvents)
-    try {
-      Calendar.Events!.remove(calendar.googleCalendarId, event.id!, { sendUpdates: "none" });
-      deleted++;
-    } catch (e) {
-      Logger.log(`Failed to delete event ${event.id}: ${e}`);
-    }
+  let pageToken;
+  do {
+    pageNumber++;
+    const reponse: GoogleAppsScript.Calendar.Schema.Events = Calendar.Events!.list(
+      calendar.googleCalendarId,
+      { pageToken },
+    );
+    pageToken = reponse?.nextPageToken;
+
+    const oldEvents = reponse?.items ?? [];
+    Logger.log(`Page ${pageNumber}: Found ${oldEvents.length} events to delete`);
+
+    for (const event of oldEvents)
+      try {
+        Calendar.Events!.remove(calendar.googleCalendarId, event.id!, { sendUpdates: "none" });
+        deleted++;
+      } catch (e) {
+        Logger.log(`Failed to delete event ${event.id}: ${e}`);
+      }
+  } while (pageToken);
 
   // clear sync states since all events got deleted
   const fullSyncStates = Object.fromEntries(
