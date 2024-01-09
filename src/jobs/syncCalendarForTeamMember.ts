@@ -107,13 +107,11 @@ function getOutOfOfficeEvents(
   // here we must fall back to the Calendar API because CalendarApp does not
   // support querying for OOO events or incremental sync
 
-  // It's forbidden to use parameters when syncing
+  // Certain parameters are banned when syncing: iCalUID, orderBy, privateExtendedProperty, q, sharedExtendedProperty, timeMax, timeMin, updatedMin
   const queryParameters = syncToken
     ? {}
     : {
-        eventTypes: ["outOfOffice"],
         timeMin: sub(new Date(), backPopulateWindow).toISOString(),
-        singleEvents: false,
       };
 
   const allEvents: CalendarApiEvent[] = [];
@@ -123,9 +121,10 @@ function getOutOfOfficeEvents(
     // very strange that a type can't be inferred here
     const response: GoogleAppsScript.Calendar.Schema.Events = Calendar.Events!.list(calendarId, {
       ...queryParameters,
+      eventTypes: ["outOfOffice"],
+      singleEvents: false,
       pageToken,
-      // don't combine syncing and paging
-      syncToken: pageToken ? undefined : syncToken,
+      syncToken,
     });
 
     if (response.items) allEvents.push(...response.items);
