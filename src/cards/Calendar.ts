@@ -9,7 +9,7 @@ import { NameFormat, SyncStatus, TeamCalendar } from "../models/TeamCalendar";
 import { TeamCalendarId } from "../models/TeamCalendarId";
 import { formatGoogleCalendarName, googleCalendarSettingsUrl } from "./utils/googleCalendar";
 import { syncStatusText } from "./utils/teamCalendar";
-import { QueueFullSyncAllCalendarsAction } from "../endpoints/onQueueFullSyncAllCalendars";
+import { QueueFullSyncAllCalendarsAction } from "../endpoints/onQueueFullSyncCalendar";
 
 function CalendarHeader(calendar: TeamCalendar) {
   return CardService.newCardHeader().setTitle(calendar.name);
@@ -42,7 +42,7 @@ function CalendarStatusSection(calendarId: TeamCalendarId, status: SyncStatus) {
       buttons.addButton(
         CardService.newTextButton()
           .setText("Retry")
-          .setOnClickAction(QueueFullSyncAllCalendarsAction()),
+          .setOnClickAction(QueueFullSyncAllCalendarsAction(calendarId)),
       );
       break;
 
@@ -61,7 +61,7 @@ function CalendarStatusSection(calendarId: TeamCalendarId, status: SyncStatus) {
       buttons.addButton(
         CardService.newTextButton()
           .setText("Rebuild now")
-          .setOnClickAction(QueueFullSyncAllCalendarsAction()),
+          .setOnClickAction(QueueFullSyncAllCalendarsAction(calendarId)),
       );
       break;
   }

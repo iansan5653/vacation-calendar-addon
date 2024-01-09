@@ -1,7 +1,7 @@
 import { LinkedCalendarController } from "../controllers/LinkedCalendarController";
 import { TeamCalendarController } from "../controllers/TeamCalendarController";
 import { TeamCalendarId } from "../models/TeamCalendarId";
-import { asyncFullSyncAllCalendars } from "./asyncFullSyncAllCalendars";
+import { asyncFullSyncCalendar } from "./asyncFullSyncCalendar";
 
 export function recreateLinkedCalendar(teamCalendarId: TeamCalendarId) {
   const teamCalendar = TeamCalendarController.read(teamCalendarId);
@@ -19,5 +19,5 @@ export function recreateLinkedCalendar(teamCalendarId: TeamCalendarId) {
     teamMembers: unsyncedTeamMembers,
   });
 
-  asyncFullSyncAllCalendars;
+  asyncFullSyncCalendar(teamCalendarId);
 }

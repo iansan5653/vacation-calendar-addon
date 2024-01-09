@@ -1,7 +1,7 @@
 import { LinkedCalendarController } from "../controllers/LinkedCalendarController";
 import { TeamCalendarController } from "../controllers/TeamCalendarController";
 import { NewTeamCalendar } from "../models/TeamCalendar";
-import { asyncFullSyncAllCalendars } from "./asyncFullSyncAllCalendars";
+import { asyncFullSyncCalendar } from "./asyncFullSyncCalendar";
 import { updateSyncTriggers } from "./updateSyncTriggers";
 
 export function createCalendar(config: NewTeamCalendar) {
@@ -17,7 +17,7 @@ export function createCalendar(config: NewTeamCalendar) {
   });
 
   updateSyncTriggers();
-  asyncFullSyncAllCalendars();
+  asyncFullSyncCalendar(result.id);
 
   return result;
 }

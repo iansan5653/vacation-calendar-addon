@@ -14,4 +14,6 @@ interface Response {
 
 export type Endpoint = (event: Event) => Response | Response[] | void;
 
+export type TimeDrivenEndpoint = (event: GoogleAppsScript.Events.TimeDriven) => void;
+
 export type CalendarSyncEndpoint = (event: GoogleAppsScript.Events.CalendarEventUpdated) => void;
