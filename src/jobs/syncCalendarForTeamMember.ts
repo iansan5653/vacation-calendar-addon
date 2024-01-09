@@ -107,16 +107,24 @@ function getOutOfOfficeEvents(
   // here we must fall back to the Calendar API because CalendarApp does not
   // support querying for OOO events or incremental sync
 
+  // It's forbidden to use parameters when syncing
+  const queryParameters = syncToken
+    ? {}
+    : {
+        eventTypes: ["outOfOffice"],
+        timeMin: sub(new Date(), backPopulateWindow).toISOString(),
+        singleEvents: false,
+      };
+
   const allEvents: CalendarApiEvent[] = [];
   let pageToken = undefined;
   let nextSyncToken = undefined;
   do {
     // very strange that a type can't be inferred here
     const response: GoogleAppsScript.Calendar.Schema.Events = Calendar.Events!.list(calendarId, {
-      eventTypes: ["outOfOffice"],
-      timeMin: sub(new Date(), backPopulateWindow).toISOString(),
-      singleEvents: false,
+      ...queryParameters,
       pageToken,
+      // don't combine syncing and paging
       syncToken: pageToken ? undefined : syncToken,
     });
 
@@ -156,11 +164,7 @@ export function syncCalendarForTeamMember(
     if (syncState.syncToken) {
       Logger.log(`Failed to incrementally sync, retrying query as full sync: ${e}`);
       // sometimes syncing can fail with a 401 error, requiring a full sync
-      queryResult = getOutOfOfficeEvents(
-        calendar.googleCalendarId,
-        calendar.minEventDuration,
-        undefined,
-      );
+      queryResult = getOutOfOfficeEvents(teamMember, calendar.minEventDuration, undefined);
       syncState.syncToken = undefined;
     } else {
       // this wasn't an incremental sync so no point in retrying

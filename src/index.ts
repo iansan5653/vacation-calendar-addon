@@ -10,3 +10,4 @@ export { onClickCalendarGridItem } from "./endpoints/onClickCalendarGridItem";
 export { onRecreateLinkedCalendar } from "./endpoints/onRecreateLinkedCalendar";
 export { onRefreshCalendarView } from "./endpoints/onRefreshCalendarView";
 export { onQueueFullSyncCalendars } from "./endpoints/onQueueFullSyncCalendars";
+export { onSyncTeamMember } from "./endpoints/onSyncTeamMember";
