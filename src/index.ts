@@ -9,5 +9,5 @@ export { onSubmitCalendarForm } from "./endpoints/onSubmitCalendarForm";
 export { onClickCalendarGridItem } from "./endpoints/onClickCalendarGridItem";
 export { onRecreateLinkedCalendar } from "./endpoints/onRecreateLinkedCalendar";
 export { onRefreshCalendarView } from "./endpoints/onRefreshCalendarView";
-export { onQueueFullSyncCalendar as onQueueFullSyncCalendars } from "./endpoints/onQueueFullSyncCalendar";
+export { onQueueFullSyncCalendar } from "./endpoints/onQueueFullSyncCalendar";
 export { onSyncTeamMember } from "./endpoints/onSyncTeamMember";
