@@ -1,7 +1,5 @@
-import { LinkedCalendarController } from "../controllers/LinkedCalendarController";
-import { TeamCalendarController } from "../controllers/TeamCalendarController";
+import { recreateLinkedCalendar } from "../jobs/recreateLinkedCalendar";
 import { TeamCalendarId } from "../models/TeamCalendarId";
-import { queueFullSyncCalendars } from "./onFullSyncCalendars";
 import { RefreshCalendarViewNavigation } from "./onRefreshCalendarView";
 import { Endpoint } from "./utils/Endpoint";
 import { TeamCalendarIdParameters } from "./utils/Parameters";
@@ -11,20 +9,7 @@ export const onRecreateLinkedCalendar: Endpoint = ({ commonEventObject }) => {
   if (!teamCalendarId)
     throw new Error("Missing parameter: Cannot recreate linked calendar without team calendar ID");
 
-  const teamCalendar = TeamCalendarController.read(teamCalendarId);
-  if (!teamCalendar) throw new Error("Team calendar not found");
-
-  const googleCalendarId = LinkedCalendarController.create(teamCalendar.name);
-  // clear existing sync states
-  const unsyncedTeamMembers = Object.fromEntries(
-    Object.keys(teamCalendar.teamMembers).map((email) => [email, { eventIds: {} }] as const),
-  );
-  TeamCalendarController.update(teamCalendarId, {
-    googleCalendarId,
-    teamMembers: unsyncedTeamMembers,
-  });
-
-  queueFullSyncCalendars({ seconds: 1 });
+  recreateLinkedCalendar(teamCalendarId);
 
   return CardService.newActionResponseBuilder()
     .setNavigation(RefreshCalendarViewNavigation(teamCalendarId, true))

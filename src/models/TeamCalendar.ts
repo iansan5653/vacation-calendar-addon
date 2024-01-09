@@ -26,7 +26,7 @@ export interface TeamMemberSyncState {
 }
 export const TeamMemberSyncState = {
   empty: (): TeamMemberSyncState => ({ eventIds: {} }),
-}
+};
 
 export interface NewTeamCalendar {
   name: string;
@@ -35,9 +35,9 @@ export interface NewTeamCalendar {
   /** In hours */
   minEventDuration: number;
   nameFormat: NameFormat;
-  syncStatus: SyncStatus;
 }
 
 export interface TeamCalendar extends NewTeamCalendar {
   googleCalendarId: GoogleCalendarId;
+  syncStatus: SyncStatus;
 }

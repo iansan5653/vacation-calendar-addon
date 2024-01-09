@@ -1,12 +1,11 @@
 import { Duration } from "date-fns";
-import { fullSyncFrequency } from "../config";
 import { QueueController } from "../controllers/QueueController";
-import { TeamCalendarsController } from "../controllers/TeamCalendarsController";
+import { TeamCalendarController } from "../controllers/TeamCalendarController";
 import { fullSyncCalendar } from "../jobs/fullSyncCalendar";
 import { Endpoint } from "./utils/Endpoint";
 
 export const onFullSyncCalendars: Endpoint = () => {
-  const calendars = TeamCalendarsController.read();
+  const calendars = TeamCalendarController.readAll();
 
   for (const [id, calendar] of calendars)
     try {
@@ -14,9 +13,6 @@ export const onFullSyncCalendars: Endpoint = () => {
     } catch (error) {
       Logger.log({ id, error });
     }
-
-  // Automatically full sync again later
-  if (calendars.length) queueFullSyncCalendars(fullSyncFrequency);
 };
 
 // use QueueFullSyncCalendarsAction instead, for async

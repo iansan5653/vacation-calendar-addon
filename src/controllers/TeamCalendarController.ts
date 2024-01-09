@@ -1,20 +1,8 @@
-import { NewTeamCalendar, TeamCalendar } from "../models/TeamCalendar";
+import { TeamCalendar } from "../models/TeamCalendar";
 import { TeamCalendarId } from "../models/TeamCalendarId";
-import { LinkedCalendarController } from "./LinkedCalendarController";
 
 export const TeamCalendarController = {
-  create({ name, teamMembers, minEventDuration, nameFormat, syncStatus }: NewTeamCalendar) {
-    const googleCalendarId = LinkedCalendarController.create(name);
-
-    const calendar: TeamCalendar = {
-      name,
-      teamMembers,
-      googleCalendarId,
-      minEventDuration,
-      nameFormat,
-      syncStatus,
-    };
-
+  create(calendar: TeamCalendar) {
     const id = TeamCalendarId.new();
     PropertiesService.getUserProperties().setProperty(id, JSON.stringify(calendar));
 
@@ -42,15 +30,17 @@ export const TeamCalendarController = {
 
     PropertiesService.getUserProperties().setProperty(id, JSON.stringify(updatedCalendar));
 
-    if ("name" in data)
-      LinkedCalendarController.read(currentCalendar.googleCalendarId)?.setName(
-        updatedCalendar.name,
-      );
-
     return updatedCalendar;
   },
 
   delete(id: TeamCalendarId) {
     PropertiesService.getUserProperties().deleteProperty(id);
+  },
+
+  /** Get all team calendars. */
+  readAll() {
+    return Object.entries(PropertiesService.getUserProperties().getProperties())
+      .filter((entry): entry is [TeamCalendarId, string] => TeamCalendarId.is(entry[0]))
+      .map(([id, json]) => [id, JSON.parse(json) as TeamCalendar] as const);
   },
 };

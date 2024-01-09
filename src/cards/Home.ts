@@ -1,4 +1,4 @@
-import { TeamCalendarsController } from "../controllers/TeamCalendarsController";
+import { TeamCalendarController } from "../controllers/TeamCalendarController";
 import { OnClickCalendarGridItemAction } from "../endpoints/onClickCalendarGridItem";
 import { GoHomeAction } from "../endpoints/onGoHome";
 import { StartUpdateCalendarAction } from "../endpoints/onStartUpdateCalendar";
@@ -43,7 +43,7 @@ function RefreshButton() {
 }
 
 export function HomeCard() {
-  const calendars = TeamCalendarsController.read();
+  const calendars = TeamCalendarController.readAll();
 
   const body = CardService.newCardSection();
 

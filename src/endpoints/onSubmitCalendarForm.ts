@@ -1,21 +1,19 @@
 import { CalendarCard } from "../cards/Calendar";
-import { TeamCalendarController } from "../controllers/TeamCalendarController";
+import { createCalendar } from "../jobs/createCalendar";
+import { updateCalendar } from "../jobs/updateCalendar";
 import { NameFormat } from "../models/TeamCalendar";
 import { TeamCalendarId } from "../models/TeamCalendarId";
-import { queueFullSyncCalendars } from "./onFullSyncCalendars";
 import { Endpoint } from "./utils/Endpoint";
 import { TeamCalendarIdParameters } from "./utils/Parameters";
-
-// TODO: move logic to job
 
 export const onSubmitCalendarForm: Endpoint = ({ commonEventObject }) => {
   let teamCalendarId = new TeamCalendarIdParameters(commonEventObject.parameters).getId();
   const isUpdate = !!teamCalendarId;
 
-  const name = commonEventObject.formInputs?.[calendarFormFields.name]?.stringInputs?.value[0] ?? "";
+  const name =
+    commonEventObject.formInputs?.[calendarFormFields.name]?.stringInputs?.value[0] ?? "";
   if (!name) throw new Error("Calendar name is required.");
 
-  // TODO: preserve existing sync states for unchanged team members
   const teamMembers = Object.fromEntries(
     commonEventObject.formInputs?.[calendarFormFields.teamMembers]?.stringInputs?.value[0]
       ?.split("\n")
@@ -37,27 +35,21 @@ export const onSubmitCalendarForm: Endpoint = ({ commonEventObject }) => {
 
   let teamCalendar;
   if (teamCalendarId) {
-    teamCalendar = TeamCalendarController.update(teamCalendarId, {
+    teamCalendar = updateCalendar(teamCalendarId, {
       name,
       teamMembers,
       minEventDuration,
     });
   } else {
-    const result = TeamCalendarController.create({
+    const result = createCalendar({
       name,
       teamMembers,
       minEventDuration,
       nameFormat,
-      syncStatus: {
-        state: "pending",
-        timestamp: new Date(),
-      },
     });
     teamCalendar = result.calendar;
     teamCalendarId = result.id;
   }
-
-  queueFullSyncCalendars({ seconds: 1 });
 
   return CardService.newActionResponseBuilder()
     .setNotification(

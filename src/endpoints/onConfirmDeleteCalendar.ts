@@ -1,5 +1,4 @@
-import { LinkedCalendarController } from "../controllers/LinkedCalendarController";
-import { TeamCalendarController } from "../controllers/TeamCalendarController";
+import { deleteCalendar } from "../jobs/deleteCalendar";
 import { TeamCalendarId } from "../models/TeamCalendarId";
 import { GoHomeNavigation } from "./onGoHome";
 import { Endpoint } from "./utils/Endpoint";
@@ -17,12 +16,7 @@ export const onConfirmDeleteCalendar: Endpoint = ({ commonEventObject }) => {
     (commonEventObject.formInputs?.[deleteCalendarFormFields.deleteLinkedCalendar]?.stringInputs
       ?.value.length ?? 0) > 0;
 
-  if (deleteLinkedCalendar) {
-    const googleCalendarId = TeamCalendarController.read(teamCalendarId)?.googleCalendarId;
-    if (googleCalendarId) LinkedCalendarController.delete(googleCalendarId);
-  }
-
-  TeamCalendarController.delete(teamCalendarId);
+  deleteCalendar(teamCalendarId, deleteLinkedCalendar);
 
   return CardService.newActionResponseBuilder()
     .setNotification(CardService.newNotification().setText("Calendar deleted"))
