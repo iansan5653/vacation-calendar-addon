@@ -1,8 +1,8 @@
 import { LinkedCalendarController } from "../controllers/LinkedCalendarController";
 import { TeamCalendarController } from "../controllers/TeamCalendarController";
-import { queueFullSyncCalendars } from "../endpoints/onFullSyncCalendars";
 import { TeamCalendar } from "../models/TeamCalendar";
 import { TeamCalendarId } from "../models/TeamCalendarId";
+import { asyncFullSyncAllCalendars } from "./asyncFullSyncAllCalendars";
 import { updateSyncTriggers } from "./updateSyncTriggers";
 
 export function updateCalendar(calendarId: TeamCalendarId, fields: Partial<TeamCalendar>) {
@@ -13,7 +13,7 @@ export function updateCalendar(calendarId: TeamCalendarId, fields: Partial<TeamC
     LinkedCalendarController.read(updated.googleCalendarId)?.setName(updated.name);
 
   updateSyncTriggers();
-  queueFullSyncCalendars({ seconds: 1 });
+  asyncFullSyncAllCalendars();
 
   return updated;
 }

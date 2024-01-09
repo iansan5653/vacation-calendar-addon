@@ -1,7 +1,7 @@
 import { LinkedCalendarController } from "../controllers/LinkedCalendarController";
 import { TeamCalendarController } from "../controllers/TeamCalendarController";
-import { queueFullSyncCalendars } from "../endpoints/onFullSyncCalendars";
 import { NewTeamCalendar } from "../models/TeamCalendar";
+import { asyncFullSyncAllCalendars } from "./asyncFullSyncAllCalendars";
 import { updateSyncTriggers } from "./updateSyncTriggers";
 
 export function createCalendar(config: NewTeamCalendar) {
@@ -11,13 +11,13 @@ export function createCalendar(config: NewTeamCalendar) {
     ...config,
     googleCalendarId,
     syncStatus: {
-      state: "pending",
+      state: "building",
       timestamp: new Date(),
     },
   });
 
   updateSyncTriggers();
-  queueFullSyncCalendars({ seconds: 1 });
+  asyncFullSyncAllCalendars();
 
   return result;
 }

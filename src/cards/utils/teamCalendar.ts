@@ -6,10 +6,13 @@ export function syncStatusText(syncStatus: SyncStatus) {
     case "error":
       return `⚠️ Failed to sync: ${syncStatus.message}`;
 
-    case "pending":
-      return "Syncing...";
+    case "rebuilding":
+      return "Rebuilding...";
+
+    case "building":
+      return "Building...";
 
     case "success":
-      return `Synced ${formatDistanceToNow(syncStatus.timestamp)} ago`;
+      return `Updated ${formatDistanceToNow(syncStatus.timestamp)} ago`;
   }
 }

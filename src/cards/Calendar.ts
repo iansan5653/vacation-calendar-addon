@@ -9,7 +9,7 @@ import { NameFormat, SyncStatus, TeamCalendar } from "../models/TeamCalendar";
 import { TeamCalendarId } from "../models/TeamCalendarId";
 import { formatGoogleCalendarName, googleCalendarSettingsUrl } from "./utils/googleCalendar";
 import { syncStatusText } from "./utils/teamCalendar";
-import { QueueFullSyncCalendarsAction } from "../endpoints/onQueueFullSyncCalendars";
+import { QueueFullSyncAllCalendarsAction } from "../endpoints/onQueueFullSyncAllCalendars";
 
 function CalendarHeader(calendar: TeamCalendar) {
   return CardService.newCardHeader().setTitle(calendar.name);
@@ -34,7 +34,7 @@ function CalendarStatusSection(calendarId: TeamCalendarId, status: SyncStatus) {
   const text = CardService.newDecoratedText().setText(syncStatusText(status));
   const buttons = CardService.newButtonSet();
 
-  if (status.state === "pending" && differenceInMinutes(status.timestamp, new Date()))
+  if (status.state === "rebuilding" && differenceInMinutes(status.timestamp, new Date()) > 5)
     status = { state: "error", message: "Exceeded time limit", timestamp: status.timestamp };
 
   switch (status.state) {
@@ -42,20 +42,26 @@ function CalendarStatusSection(calendarId: TeamCalendarId, status: SyncStatus) {
       buttons.addButton(
         CardService.newTextButton()
           .setText("Retry")
-          .setOnClickAction(QueueFullSyncCalendarsAction()),
+          .setOnClickAction(QueueFullSyncAllCalendarsAction()),
       );
       break;
 
-    case "pending":
-      text.setBottomLabel("Syncing can take a few minutes.");
+    case "rebuilding":
+      text.setBottomLabel("Rebuilding can take up to five minutes.");
+      break;
+
+    case "building":
+      text.setBottomLabel("Building a new calendar can take up to five minutes.");
       break;
 
     case "success":
-      text.setBottomLabel("Calendars automatically sync once per week.");
+      text.setBottomLabel(
+        "Calendars update automatically, but if this isn't working a full rebuild may be necessary. A full rebuild will replace all events on the calendar.",
+      );
       buttons.addButton(
         CardService.newTextButton()
-          .setText("Sync now")
-          .setOnClickAction(QueueFullSyncCalendarsAction()),
+          .setText("Rebuild now")
+          .setOnClickAction(QueueFullSyncAllCalendarsAction()),
       );
       break;
   }

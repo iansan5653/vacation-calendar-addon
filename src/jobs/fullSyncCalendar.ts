@@ -21,7 +21,8 @@ export function fullSyncCalendar(
   Logger.log(`Fully wiping and repopulating ${calendar.name} (${teamCalendarId})`);
   Logger.log(calendar);
 
-  updateStatus(teamCalendarId, { state: "pending" });
+  if (calendar.syncStatus.state !== "building" && calendar.syncStatus.state !== "rebuilding")
+    updateStatus(teamCalendarId, { state: "rebuilding" });
 
   const googleCalendar = LinkedCalendarController.read(calendar.googleCalendarId);
   if (!googleCalendar) {

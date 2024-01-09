@@ -9,5 +9,8 @@ export function syncTeamMember(teamMember: string) {
 
   Logger.log(`Syncing ${teamMember} for ${calendars.length} calendars`);
 
-  for (const [, calendar] of calendars) syncCalendarForTeamMember(calendar, teamMember);
+  for (const [id, calendar] of calendars) {
+    syncCalendarForTeamMember(calendar, teamMember);
+    TeamCalendarController.update(id, { syncStatus: { state: "success", timestamp: new Date() } });
+  }
 }

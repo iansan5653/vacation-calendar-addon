@@ -11,7 +11,7 @@ export const NameFormat = {
   } as const satisfies Record<NameFormat, string>,
 };
 
-type SyncState = "pending" | "success" | "error";
+type SyncState = "rebuilding" | "building" | "success" | "error";
 
 export interface SyncStatus {
   state: SyncState;
