@@ -30,6 +30,10 @@
         {
           "label": "New team calendar",
           "runFunction": "onStartUpdateCalendar"
+        },
+        {
+          "label": "Help",
+          "runFunction": "onGoHelp"
         }
       ],
       "layoutProperties": {

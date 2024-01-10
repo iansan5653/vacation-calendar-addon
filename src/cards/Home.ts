@@ -1,5 +1,6 @@
 import { TeamCalendarController } from "../controllers/TeamCalendarController";
 import { OnClickCalendarGridItemAction } from "../endpoints/onClickCalendarGridItem";
+import { GoHelpAction } from "../endpoints/onGoHelp";
 import { GoHomeAction } from "../endpoints/onGoHome";
 import { StartUpdateCalendarAction } from "../endpoints/onStartUpdateCalendar";
 import { TeamCalendar } from "../models/TeamCalendar";
@@ -10,6 +11,10 @@ function CreateButton() {
   return CardService.newTextButton()
     .setText("New calendar")
     .setOnClickAction(StartUpdateCalendarAction());
+}
+
+function HelpButton() {
+  return CardService.newTextButton().setText("Help").setOnClickAction(GoHelpAction());
 }
 
 function EmptyText() {
@@ -48,7 +53,9 @@ export function HomeCard() {
   const body = CardService.newCardSection();
 
   if (calendars.length === 0) {
-    body.addWidget(EmptyText()).addWidget(CreateButton());
+    body
+      .addWidget(EmptyText())
+      .addWidget(CardService.newButtonSet().addButton(CreateButton()).addButton(HelpButton()));
   } else {
     body
       .addWidget(CalendarsGrid(calendars))

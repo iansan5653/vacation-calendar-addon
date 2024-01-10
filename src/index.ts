@@ -3,6 +3,7 @@ export { onDeleteCalendar } from "./endpoints/onDeleteCalendar";
 export { onGetHomepage } from "./endpoints/onGetHomepage";
 export { onGoBack } from "./endpoints/onGoBack";
 export { onGoHome } from "./endpoints/onGoHome";
+export { onGoHelp } from "./endpoints/onGoHelp";
 export { onFullSyncCalendar } from "./endpoints/onFullSyncCalendar";
 export { onStartUpdateCalendar } from "./endpoints/onStartUpdateCalendar";
 export { onSubmitCalendarForm } from "./endpoints/onSubmitCalendarForm";
