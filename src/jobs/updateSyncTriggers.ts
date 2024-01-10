@@ -3,6 +3,10 @@ import { TeamCalendarController } from "../controllers/TeamCalendarController";
 
 /** Update all sync triggers for all calendars. */
 export function updateSyncTriggers() {
+  // This can take a while, so let's avoid concurrent runs to be safe
+  const lock = LockService.getUserLock();
+  lock.waitLock(15_000);
+
   Logger.log("Updating all sync triggers");
 
   const allTeamMembers = new Set(
@@ -18,4 +22,6 @@ export function updateSyncTriggers() {
       SyncTriggerController.delete(existingTriggerTeamMember);
 
   for (const teamMember of allTeamMembers) SyncTriggerController.create(teamMember);
+
+  lock.releaseLock();
 }

@@ -16,6 +16,11 @@ export function fullSyncCalendar(
   teamCalendarId: TeamCalendarId,
   calendar = TeamCalendarController.read(teamCalendarId),
 ) {
+  // Avoid concurrent syncs. Unfortunately it's likely this will result in hitting the 6 minute execution limit, but
+  // there's not much we can do. Ideally we'd kill the ongoing sync but that's much more complicated.
+  const lock = LockService.getUserLock();
+  lock.waitLock(120_000); // long timeout because full syncs take forever, and we really don't want to skip a full sync as it will leave us in a bad state
+
   if (!calendar) throw new Error("Failed to sync calendar: not found");
 
   Logger.log(`Fully wiping and repopulating ${calendar.name} (${teamCalendarId})`);
@@ -57,4 +62,6 @@ export function fullSyncCalendar(
       timestamp: new Date(),
     },
   });
+
+  lock.releaseLock();
 }

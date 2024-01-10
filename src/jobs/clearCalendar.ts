@@ -6,6 +6,8 @@ export function clearCalendar(
   teamCalendarId: TeamCalendarId,
   calendar = TeamCalendarController.read(teamCalendarId),
 ) {
+  // no need to lock since we already lock fullSyncCalendar
+
   Logger.log(`Fully clearing calendar ${teamCalendarId}`);
 
   if (!calendar) throw new Error("Failed to clear calendar: not found");
