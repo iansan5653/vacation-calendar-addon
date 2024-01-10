@@ -25,7 +25,7 @@
   "addOns": {
     "common": {
       "name": "Vacation Calendar",
-      "logoUrl": "https://iansan5653.github.io/team-calendar/logo.png",
+      "logoUrl": "https://iansan5653.github.io/vacation-calendar-addon/logo.png",
       "universalActions": [
         {
           "label": "New team calendar",
