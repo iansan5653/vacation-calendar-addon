@@ -12,6 +12,8 @@ the
 [out of office](https://support.google.com/calendar/answer/7638168?hl=en&co=GENIE.Platform%3DDesktop#:~:text=Show%20when%20you%E2%80%99re%20out%20of%20office)
 functionality.
 
-|                                                                   |                                                                             |
+## Screenshots
+
+| Home                                                              | Calendar management                                                         |
 | ----------------------------------------------------------------- | --------------------------------------------------------------------------- |
 | ![Screenshot of the add-on home page](./docs/screenshot-home.png) | ![Screenshot of a calendar management page](./docs/screenshot-calendar.png) |
