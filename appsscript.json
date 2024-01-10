@@ -28,7 +28,7 @@
       "logoUrl": "https://iansan5653.github.io/team-calendar/logo.png",
       "universalActions": [
         {
-          "label": "Create a new calendar",
+          "label": "New team calendar",
           "runFunction": "onStartUpdateCalendar"
         }
       ],
