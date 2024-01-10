@@ -3,9 +3,10 @@ import { TeamCalendarController } from "../controllers/TeamCalendarController";
 
 /** Update all sync triggers for all calendars. */
 export function updateSyncTriggers() {
-  // This can take a while, so let's avoid concurrent runs to be safe
+  // This can take a while, so let's avoid concurrent runs to be safe. But, this task runs synchronously in the UI so
+  // we really don't want to hit the 30s timeout here.
   const lock = LockService.getUserLock();
-  lock.waitLock(15_000);
+  lock.waitLock(10_000);
 
   Logger.log("Updating all sync triggers");
 
