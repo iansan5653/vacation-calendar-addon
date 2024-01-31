@@ -5,6 +5,8 @@ import { TeamCalendarController } from "../controllers/TeamCalendarController";
 export function updateSyncTriggers() {
   // This can take a while, so let's avoid concurrent runs to be safe. But, this task runs synchronously in the UI so
   // we really don't want to hit the 30s timeout here.
+  // Here we could use LockController, but it doesn't make a difference since this job affects all calendars - it's
+  // not resource specific. So we use the native locker for performance and simplicity.
   const lock = LockService.getUserLock();
   lock.waitLock(10_000);
 

@@ -142,7 +142,7 @@ function getOutOfOfficeEvents(
   return { filteredEvents, nextSyncToken };
 }
 
-/** Update one team member in the calendar. Does NOT update calendar status. */
+/** Update one team member in the calendar. Does NOT update calendar status or obtain locks! */
 export function syncCalendarForTeamMember(
   calendar: TeamCalendar,
   teamMember: string,
