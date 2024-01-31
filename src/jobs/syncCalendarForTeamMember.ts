@@ -99,11 +99,7 @@ function getDisplayName(email: string, format: NameFormat) {
 }
 
 /** Get all the OOO events on the calendar. */
-function getOutOfOfficeEvents(
-  calendarId: string,
-  minDurationHours: number,
-  syncToken: string | undefined,
-) {
+function getOutOfOfficeEvents(calendarId: string, syncToken: string | undefined) {
   // here we must fall back to the Calendar API because CalendarApp does not
   // support querying for OOO events or incremental sync
 
@@ -114,7 +110,7 @@ function getOutOfOfficeEvents(
         timeMin: sub(new Date(), backPopulateWindow).toISOString(),
       };
 
-  const allEvents: CalendarApiEvent[] = [];
+  const events: CalendarApiEvent[] = [];
   let pageToken = undefined;
   let nextSyncToken = undefined;
   do {
@@ -127,19 +123,15 @@ function getOutOfOfficeEvents(
       syncToken,
     });
 
-    if (response.items) allEvents.push(...response.items);
+    if (response.items) events.push(...response.items);
 
     pageToken = response.nextPageToken;
     nextSyncToken = response.nextSyncToken; // undefined until last page
   } while (pageToken !== undefined);
 
-  const filteredEvents = allEvents.filter((event) => durationInHours(event) >= minDurationHours);
+  Logger.log(`Found ${events.length} OOO events on ${calendarId} calendar`);
 
-  Logger.log(
-    `${calendarId}: Using ${filteredEvents.length} long enough events of ${allEvents.length} total OOO events`,
-  );
-
-  return { filteredEvents, nextSyncToken };
+  return { events, nextSyncToken };
 }
 
 /** Update one team member in the calendar. Does NOT update calendar status or obtain locks! */
@@ -158,19 +150,19 @@ export function syncCalendarForTeamMember(
         ? `Attempting to query incremental sync with token ${syncState.syncToken}`
         : "Querying events for full sync",
     );
-    queryResult = getOutOfOfficeEvents(teamMember, calendar.minEventDuration, syncState.syncToken);
+    queryResult = getOutOfOfficeEvents(teamMember, syncState.syncToken);
   } catch (e) {
     if (syncState.syncToken) {
       Logger.log(`Failed to incrementally sync, retrying query as full sync: ${e}`);
       // sometimes syncing can fail with a 401 error, requiring a full sync
-      queryResult = getOutOfOfficeEvents(teamMember, calendar.minEventDuration, undefined);
+      queryResult = getOutOfOfficeEvents(teamMember, undefined);
       syncState.syncToken = undefined;
     } else {
       // this wasn't an incremental sync so no point in retrying
       throw e;
     }
   }
-  const { filteredEvents: sourceEvents, nextSyncToken } = queryResult;
+  const { events: sourceEvents, nextSyncToken } = queryResult;
 
   // if full sync, clear all existing events
   if (!syncState.syncToken) {
@@ -192,8 +184,10 @@ export function syncCalendarForTeamMember(
     if (!sourceEvent.id) continue; // shouldn't happen; the types are overly broad here
 
     const teamCalendarEventId = syncState.eventIds[sourceEvent.id];
+    const sourceEventIsLongEnough = durationInHours(sourceEvent) > calendar.minEventDuration;
 
-    if (sourceEvent.status === "cancelled" && teamCalendarEventId) {
+    // account for event duration changes by deleting / adding events that cross the threshold
+    if ((sourceEvent.status === "cancelled" || !sourceEventIsLongEnough) && teamCalendarEventId) {
       counts.deleted++;
       deleteEvent(calendar.googleCalendarId, teamCalendarEventId);
     } else if (teamCalendarEventId) {
