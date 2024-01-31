@@ -17,12 +17,16 @@ export function syncTeamMember(teamMember: string) {
       id,
       10, // short timeout since team member syncs are not important
     )(() => {
-      // by the time we obtain the lock the calendar sync token could have been updated
-      const updatedCalendar = TeamCalendarController.read(id);
-      if (!updatedCalendar) throw new Error("Failed to sync because calendar was deleted");
-      syncCalendarForTeamMember(updatedCalendar, teamMember);
+      // by the time we obtain the lock the sync state might have been updated, so don't reuse old read
+      const calendar = TeamCalendarController.read(id);
+      if (!calendar) throw new Error("Failed to sync because calendar was deleted");
+      const newSyncState = syncCalendarForTeamMember(calendar, teamMember);
       TeamCalendarController.update(id, {
         syncStatus: { state: "success", timestamp: new Date() },
+        teamMembers: {
+          ...calendar.teamMembers,
+          [teamMember]: newSyncState,
+        },
       });
     });
 }
