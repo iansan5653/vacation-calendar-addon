@@ -13,16 +13,16 @@ function updateStatus(teamCalendarId: TeamCalendarId, status: Omit<SyncStatus, "
 }
 
 /** Fully wipe and resync the entire calendar. */
-export function fullSyncCalendar(
-  teamCalendarId: TeamCalendarId,
-  calendar = TeamCalendarController.read(teamCalendarId),
-) {
+export function fullSyncCalendar(teamCalendarId: TeamCalendarId) {
   // Prevent any team syncs from trying to update the calendar while we are trying to clear it
   // Long timeout in case another full sync is running
   LockController.withLock(
     teamCalendarId,
     120,
   )(() => {
+    // important: read calendar _after_ obtaining lock
+    let calendar = TeamCalendarController.read(teamCalendarId);
+
     if (!calendar) throw new Error("Failed to sync calendar: not found");
 
     Logger.log(`Fully wiping and repopulating ${calendar.name} (${teamCalendarId})`);
