@@ -122,6 +122,7 @@ function getOutOfOfficeEvents(calendarId: string, syncToken: string | undefined)
       pageToken,
       syncToken,
     });
+    Logger.log(`API response: ${JSON.stringify(response)}`);
 
     if (response.items) events.push(...response.items);
 
@@ -142,6 +143,8 @@ export function syncCalendarForTeamMember(
   Logger.log(`Syncing ${calendar.name} for ${teamMember}`);
 
   const syncState = calendar.teamMembers[teamMember] ?? TeamMemberSyncState.empty();
+
+  Logger.log(`Current sync state: ${JSON.stringify(syncState)}`);
 
   let queryResult;
   try {
@@ -194,7 +197,7 @@ export function syncCalendarForTeamMember(
       counts.modified++;
       updateEvent(displayName, sourceEvent, calendar.googleCalendarId, teamCalendarEventId);
       newSyncState.eventIds[sourceEvent.id] = teamCalendarEventId;
-    } else if (sourceEvent.status !== "cancelled") {
+    } else if (sourceEvent.status !== "cancelled" && sourceEventIsLongEnough) {
       counts.created++;
       const newEventId = createEvent(displayName, sourceEvent, calendar.googleCalendarId);
       if (newEventId) newSyncState.eventIds[sourceEvent.id] = newEventId;
