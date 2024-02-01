@@ -159,7 +159,7 @@ export function syncCalendarForTeamMember(
   const displayName = getTeamMemberDisplayName(teamMember, calendar.nameFormat);
   Logger.log(`Display name for ${teamMember} is ${displayName}`);
 
-  const newSyncState = { ...TeamMemberSyncState.empty(), syncToken: nextSyncToken };
+  const newSyncState = { eventIds: { ...syncState.eventIds }, syncToken: nextSyncToken };
 
   const counts = { deleted: 0, modified: 0, created: 0 };
 
@@ -173,6 +173,7 @@ export function syncCalendarForTeamMember(
     if ((sourceEvent.status === "cancelled" || !sourceEventIsLongEnough) && teamCalendarEventId) {
       counts.deleted++;
       deleteEvent(calendar.googleCalendarId, teamCalendarEventId);
+      delete newSyncState.eventIds[sourceEvent.id];
     } else if (teamCalendarEventId) {
       counts.modified++;
       updateEvent(displayName, sourceEvent, calendar.googleCalendarId, teamCalendarEventId);
