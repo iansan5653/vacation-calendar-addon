@@ -29,8 +29,8 @@ function TeamMembersInput(value?: string[]) {
 function MinDurationInput(value?: string) {
   return CardService.newTextInput()
     .setFieldName(calendarFormFields.minEventDuration)
-    .setTitle("Minimum event duration")
-    .setHint("Minimum duration of events to copy, in hours")
+    .setTitle("Minimum event duration (hours)")
+    .setHint("Minimum length of events to copy, in hours")
     .setValue(value ?? "4");
 }
 
