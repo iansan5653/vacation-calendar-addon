@@ -10,6 +10,7 @@ import { TeamCalendarId } from "../models/TeamCalendarId";
 import { formatGoogleCalendarName, googleCalendarSettingsUrl } from "./utils/googleCalendar";
 import { syncStatusText } from "./utils/teamCalendar";
 import { QueueFullSyncCalendarAction } from "../endpoints/onQueueFullSyncCalendar";
+import { getTeamMemberDisplayName } from "../jobs/getTeamMemberDisplayName";
 
 function CalendarHeader(calendar: TeamCalendar) {
   return CardService.newCardHeader().setTitle(calendar.name);
@@ -84,7 +85,7 @@ function CalendarSettingsSection(calendarId: TeamCalendarId, calendar: TeamCalen
         .setTopLabel("Team members")
         .setText(
           Object.keys(calendar.teamMembers)
-            .map((e) => ` - ${e}`)
+            .map((e) => ` - ${getTeamMemberDisplayName(e, calendar.nameFormat)}`)
             .join("\n"),
         ),
     )

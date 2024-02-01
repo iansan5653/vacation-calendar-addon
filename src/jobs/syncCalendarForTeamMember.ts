@@ -1,6 +1,7 @@
 import { differenceInMinutes, parseISO, sub } from "date-fns";
-import { NameFormat, TeamCalendar, TeamMemberSyncState } from "../models/TeamCalendar";
+import { TeamCalendar, TeamMemberSyncState } from "../models/TeamCalendar";
 import { backPopulateWindow } from "../config";
+import { getTeamMemberDisplayName } from "./getTeamMemberDisplayName";
 
 type CalendarApiEvent = GoogleAppsScript.Calendar.Schema.Event;
 
@@ -74,27 +75,6 @@ function deleteEvent(calendarId: string, eventId: string) {
   } catch (e) {
     // Probably no big deal - user probably deleted it already
     Logger.log(`WARNING: Failed to delete event ${eventId}: ${e}`);
-  }
-}
-
-function getDisplayName(email: string, format: NameFormat) {
-  switch (format) {
-    case "email":
-      return email;
-    case "username":
-      return email.split("@")[0];
-    case "name":
-      // fall back to querying the directory to get full name from contacts (only works in Workspace accounts)
-      return (
-        // not-yet-typed, see https://developers.google.com/people/api/rest/v1/people/searchDirectoryPeople
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (People.People! as any).searchDirectoryPeople({
-          query: email,
-          readMask: "names",
-          sources: ["DIRECTORY_SOURCE_TYPE_DOMAIN_PROFILE", "DIRECTORY_SOURCE_TYPE_DOMAIN_CONTACT"],
-          pageSize: 1,
-        }).people?.[0]?.names?.[0]?.displayName ?? email
-      );
   }
 }
 
@@ -176,7 +156,7 @@ export function syncCalendarForTeamMember(
       deleteEvent(calendar.googleCalendarId, eventId);
   }
 
-  const displayName = getDisplayName(teamMember, calendar.nameFormat);
+  const displayName = getTeamMemberDisplayName(teamMember, calendar.nameFormat);
   Logger.log(`Display name for ${teamMember} is ${displayName}`);
 
   const newSyncState = { ...TeamMemberSyncState.empty(), syncToken: nextSyncToken };
