@@ -57,7 +57,7 @@ function CalendarStatusSection(calendarId: TeamCalendarId, status: SyncStatus) {
 
     case "success":
       text.setBottomLabel(
-        "Calendars update automatically, but if this isn't working a full rebuild may be necessary. A full rebuild will replace all events on the calendar.",
+        "Calendars update automatically, but if this isn't working a full rebuild may be necessary. A full rebuild will delete and recreate all events on the calendar.",
       );
       buttons.addButton(
         CardService.newTextButton()
