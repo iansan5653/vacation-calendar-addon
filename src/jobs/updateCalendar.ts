@@ -6,14 +6,12 @@ import { asyncFullSyncCalendar } from "./asyncFullSyncCalendar";
 import { updateSyncTriggers } from "./updateSyncTriggers";
 
 export function updateCalendar(calendarId: TeamCalendarId, fields: Partial<TeamCalendar>) {
-  const updated = TeamCalendarController.update(calendarId, fields);
+  const updatedTeamCalendar = TeamCalendarController.update(calendarId, fields);
 
-  // Update linked calendar name
-  if ("name" in fields)
-    LinkedCalendarController.read(updated.googleCalendarId)?.setName(updated.name);
+  LinkedCalendarController.update(updatedTeamCalendar);
 
   updateSyncTriggers();
   asyncFullSyncCalendar(calendarId);
 
-  return updated;
+  return updatedTeamCalendar;
 }

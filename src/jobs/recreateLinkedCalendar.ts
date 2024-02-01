@@ -7,7 +7,7 @@ export function recreateLinkedCalendar(teamCalendarId: TeamCalendarId) {
   const teamCalendar = TeamCalendarController.read(teamCalendarId);
   if (!teamCalendar) throw new Error("Team calendar not found");
 
-  const googleCalendarId = LinkedCalendarController.create(teamCalendar.name);
+  const googleCalendarId = LinkedCalendarController.create(teamCalendar);
 
   // clear existing sync states
   const unsyncedTeamMembers = Object.fromEntries(

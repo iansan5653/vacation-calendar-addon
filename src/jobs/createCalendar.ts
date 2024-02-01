@@ -5,7 +5,7 @@ import { asyncFullSyncCalendar } from "./asyncFullSyncCalendar";
 import { updateSyncTriggers } from "./updateSyncTriggers";
 
 export function createCalendar(config: NewTeamCalendar) {
-  const googleCalendarId = LinkedCalendarController.create(config.name);
+  const googleCalendarId = LinkedCalendarController.create(config);
 
   const result = TeamCalendarController.create({
     ...config,

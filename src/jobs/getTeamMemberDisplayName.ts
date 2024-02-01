@@ -20,3 +20,7 @@ export function getTeamMemberDisplayName(email: string, format: NameFormat) {
       );
   }
 }
+
+export function describeTeamMembers(teamMembers: string[], nameFormat: NameFormat) {
+  return teamMembers.map((email) => ` - ${getTeamMemberDisplayName(email, nameFormat)}`).join("\n");
+}
