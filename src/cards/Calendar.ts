@@ -126,7 +126,7 @@ function LinkedCalendarSection(calendarId: TeamCalendarId, calendar: TeamCalenda
 
   return section.addWidget(text).addWidget(
     CardService.newTextButton()
-      .setText("Sharing and settings")
+      .setText("Sharing and settings 🔗")
       .setOpenLink(CardService.newOpenLink().setUrl(googleCalendarSettingsUrl(googleCalendar))),
   );
 }
