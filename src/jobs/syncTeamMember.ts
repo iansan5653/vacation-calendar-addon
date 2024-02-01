@@ -15,11 +15,21 @@ export function syncTeamMember(teamMember: string) {
   for (const [id] of calendars)
     LockController.withLock(
       id,
-      10, // short timeout since team member syncs are not important
+      5, // short timeout since team member syncs are not important
     )(() => {
       // by the time we obtain the lock the sync state might have been updated, so don't reuse old read
       const calendar = TeamCalendarController.read(id);
-      if (!calendar) throw new Error("Failed to sync because calendar was deleted");
+      if (!calendar) {
+        Logger.log(`Skipping sync for ${id} because it no longer exists`);
+        return;
+      }
+
+      if (calendar.syncStatus.state !== "success") {
+        // This might be because a full sync is queued or recently failed
+        Logger.log(`Skipping sync for ${calendar.name} because it is not in a success state`);
+        return;
+      }
+
       const newSyncState = syncCalendarForTeamMember(calendar, teamMember);
       TeamCalendarController.update(id, {
         syncStatus: { state: "success", timestamp: new Date() },
