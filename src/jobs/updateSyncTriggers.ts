@@ -20,11 +20,25 @@ export function updateSyncTriggers() {
 
   const existingTriggers = SyncTriggerController.readAll();
 
-  for (const existingTriggerTeamMember of Object.keys(existingTriggers))
-    if (!allTeamMembers.has(existingTriggerTeamMember))
-      SyncTriggerController.delete(existingTriggerTeamMember);
+  Logger.log("Deleting all existing sync triggers");
 
-  for (const teamMember of allTeamMembers) SyncTriggerController.create(teamMember);
+  for (const existingTriggerTeamMember of Object.keys(existingTriggers))
+    try {
+      SyncTriggerController.delete(existingTriggerTeamMember);
+    } catch (e) {
+      Logger.log(`Failed to delete existing sync trigger for ${existingTriggerTeamMember}: ${e}`);
+    }
+
+  Logger.log(`Creating new triggers for all team members in all calendars: ${[...allTeamMembers]}`);
+
+  for (const teamMember of allTeamMembers)
+    try {
+      SyncTriggerController.create(teamMember);
+    } catch (e) {
+      Logger.log(`Failed to create new sync trigger for ${teamMember}: ${e}`);
+    }
+
+  Logger.log("Finished updating sync triggers");
 
   lock.releaseLock();
 }
